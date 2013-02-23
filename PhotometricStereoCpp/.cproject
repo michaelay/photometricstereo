@@ -34,7 +34,8 @@
 									<listOptionValue builtIn="false" value="glfw"/>
 								</option>
 								<option id="macosx.cpp.link.option.paths.1994643501" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="/opt/local/lib"/>
+									<listOptionValue builtIn="false" value="/usr/local/Cellar/boost/1.53.0/lib"/>
+									<listOptionValue builtIn="false" value="/usr/local/Cellar/opencv/2.4.3/lib"/>
 								</option>
 								<option id="macosx.cpp.link.option.userobjs.1132362766" name="Other objects" superClass="macosx.cpp.link.option.userobjs"/>
 								<option id="macosx.cpp.link.option.flags.109145137" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-framework GLUT -framework OpenGL -framework Cocoa" valueType="string"/>
@@ -51,7 +52,8 @@
 								<option id="gnu.cpp.compilermacosx.exe.debug.option.optimization.level.2092153340" name="Optimization Level" superClass="gnu.cpp.compilermacosx.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level.1247881723" name="Debug Level" superClass="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.598735569" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/opt/local/include"/>
+									<listOptionValue builtIn="false" value="/usr/local/Cellar/opencv/2.4.3/include"/>
+									<listOptionValue builtIn="false" value="/usr/local/Cellar/boost/1.53.0/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1733562147" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.289981154" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
