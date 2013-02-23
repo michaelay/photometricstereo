@@ -9,6 +9,7 @@ Build using Eclipse CDT
 
 ## Install instruction 
 
-* install Nvidia CUDA
+* upgrade xcode and install xcode command line tools in xcode preferences
+* install Nvidia CUDA (optional)
 * brew install opencv 
 * brew install boost

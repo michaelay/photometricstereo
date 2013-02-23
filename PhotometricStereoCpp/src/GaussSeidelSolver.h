@@ -19,7 +19,7 @@ public:
 	virtual ~GaussSeidelSolver();
 
 	void normalToHeight(Mat normals, int numRow, Mat& height);
-	void normalToHeightGpu(Mat normals, int numRow, Mat& height);
+//	void normalToHeightGpu(Mat normals, int numRow, Mat& height);
 
 
 
@@ -36,18 +36,18 @@ private:
 	void computeDifferentialAdjust(Mat xDifferential, Mat yDifferential, Mat& adjust);
 	void computeNeighborAdjust(Mat heightMat, Mat& adjust);
 
-	// gpu
-	void normalDifferentialToHeightGpu(gpu::GpuMat xDifferential, gpu::GpuMat yDifferential, gpu::GpuMat& height);
-//	void computeNormalDifferentialGpu(Mat normalVectors, int imageNumRow, Mat& xDifferentialMat, Mat& yDifferentialMat);
-	void scaleDownDifferentialAndHeightGpu(
-			gpu::GpuMat xDifferential,
-			gpu::GpuMat yDifferential,
-			gpu::GpuMat heightMat,
-			gpu::GpuMat& xDiffSmall,
-			gpu::GpuMat& yDiffSmall,
-			gpu::GpuMat& heightMatSmall);
-	void computeDifferentialAdjustGpu(gpu::GpuMat xDifferential, gpu::GpuMat yDifferential, gpu::GpuMat& adjust);
-	void computeNeighborAdjustGpu(gpu::GpuMat heightMat, gpu::GpuMat& adjust);
+//	// gpu
+//	void normalDifferentialToHeightGpu(gpu::GpuMat xDifferential, gpu::GpuMat yDifferential, gpu::GpuMat& height);
+////	void computeNormalDifferentialGpu(Mat normalVectors, int imageNumRow, Mat& xDifferentialMat, Mat& yDifferentialMat);
+//	void scaleDownDifferentialAndHeightGpu(
+//			gpu::GpuMat xDifferential,
+//			gpu::GpuMat yDifferential,
+//			gpu::GpuMat heightMat,
+//			gpu::GpuMat& xDiffSmall,
+//			gpu::GpuMat& yDiffSmall,
+//			gpu::GpuMat& heightMatSmall);
+//	void computeDifferentialAdjustGpu(gpu::GpuMat xDifferential, gpu::GpuMat yDifferential, gpu::GpuMat& adjust);
+//	void computeNeighborAdjustGpu(gpu::GpuMat heightMat, gpu::GpuMat& adjust);
 
 };
 

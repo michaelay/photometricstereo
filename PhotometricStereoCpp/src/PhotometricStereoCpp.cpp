@@ -30,7 +30,7 @@ void calibrate();
 
 int main(int argc, char *argv[]) {
 
-	Display* display = Display::getInstance();
+//	Display* display = Display::getInstance();
 
 	try {
 //		calibrate();
