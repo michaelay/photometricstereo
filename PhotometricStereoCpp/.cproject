@@ -28,6 +28,7 @@
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/opencv/2.4.3/lib/"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/glfw/2.7.7/lib/"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/boost/1.53.0/lib/"/>
+									<listOptionValue builtIn="false" value="/usr/local/Cellar/devil/1.7.8/lib/"/>
 								</option>
 								<option id="macosx.cpp.link.option.libs.248133045" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="opencv_core"/>
@@ -38,6 +39,9 @@
 									<listOptionValue builtIn="false" value="boost_thread-mt"/>
 									<listOptionValue builtIn="false" value="boost_system-mt"/>
 									<listOptionValue builtIn="false" value="glfw"/>
+									<listOptionValue builtIn="false" value="IL"/>
+									<listOptionValue builtIn="false" value="ILU"/>
+									<listOptionValue builtIn="false" value="ILUT"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.1486159284" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -55,6 +59,7 @@
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/boost/1.53.0/include"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/opencv/2.4.3/include"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/glfw/2.7.7/include"/>
+									<listOptionValue builtIn="false" value="/usr/local/Cellar/devil/1.7.8/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.117906749" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>

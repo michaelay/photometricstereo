@@ -13,3 +13,4 @@ Build using Eclipse CDT
 * install Nvidia CUDA (optional)
 * brew install opencv 
 * brew install boost
+* brew install devil
