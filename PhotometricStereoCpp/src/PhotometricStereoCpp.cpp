@@ -21,6 +21,8 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "Display.h"
 
+#include "sample/ImageGenerator.h"
+
 using namespace std;
 using namespace cv;
 
@@ -35,7 +37,10 @@ int main(int argc, char *argv[]) {
 	try {
 //		calibrate();
 //		doVideo(false, false);
-		doStatic(true, false); // hardcode, savecopy
+//		doStatic(true, false); // hardcode, savecopy
+		SampleImageGenerator* generator = new SampleImageGenerator();
+		generator->generateImage(argc, argv, "generated_");
+		delete generator;
 	} catch (Exception& ex) {
 		cerr << "Exception caught: " << ex.what() << endl;
 	}

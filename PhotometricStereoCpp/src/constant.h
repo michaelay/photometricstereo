@@ -1,8 +1,8 @@
 #ifndef __CONSTANT_H__
 #define __CONSTANT_H__
 
-#define WIN
-//#define MAC
+//#define WIN
+#define MAC
 
 #include <string>
 
