@@ -2,6 +2,7 @@
 PhotometricStereoCpp/Debug/*
 PhotometricStereoCpp/Profile/*
 PhotometricStereoCpp/Release/*
+PhotometricStereoCpp/image_*.png
 PhotometricStereo
 PhotometricStereo.zip
 MotionTracking

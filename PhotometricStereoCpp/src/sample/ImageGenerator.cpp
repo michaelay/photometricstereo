@@ -19,7 +19,7 @@
 #include <sstream>
 #include <math.h>
 #include <sys/time.h>
-
+#include "../constant.h"
 
 #define NUM_IMAGE 4
 //#define ILUT_USE_OPENGL
@@ -172,7 +172,7 @@ void
 SampleImageGenerator::generateImage(int argc, char **argv, const string& prefix) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_SINGLE);
-    glutInitWindowSize(500,500);
+    glutInitWindowSize(CAPTURE_WIDTH,CAPTURE_HEIGHT);
     glutCreateWindow("Here is a sphere, for some reason");
 
     // make sphere shinny
