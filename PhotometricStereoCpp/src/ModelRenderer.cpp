@@ -9,18 +9,24 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "constant.h"
 #include <iostream>
-//#include <GL/gl.h>
-//#include <GL/glut.h>
-//#include <OpenGL/gl.h>
-//#include <OpenGL/glu.h>
+
+#if defined(__APPLE__)
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <OpenGL/glext.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
 
 using namespace std;
 
 // for mac
 //#include <GLUT/glut.h>
 // for windows freeglut
-#include <GL/glut.h>
-#include <GL/glext.h>
+//#include <glut.h>
+//#include <glext.h>
 
 
 #define FOCAL_LENGTH 600

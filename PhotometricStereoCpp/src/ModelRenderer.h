@@ -9,7 +9,12 @@
 #define MODELRENDERER_H_
 
 #include "opencv2/core/core.hpp"
+#if defined(__APPLE__)
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
+
 
 using namespace cv;
 

@@ -7,6 +7,16 @@
 
 #include "Display.h"
 #include <GL/glfw.h>
+
+#if defined(__APPLE__)
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <OpenGL/glext.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
 #include <iostream>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -144,6 +154,7 @@ void Display::drawLight() {
 		x2 = 0;
 		y1 = 0;
 		y2 = 0;
+		break;
 	}
 
 	glBegin(GL_QUADS);

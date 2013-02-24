@@ -15,6 +15,7 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "boost/thread.hpp"
+#include "boost/date_time.hpp"
 
 using namespace std;
 using namespace cv;
