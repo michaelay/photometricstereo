@@ -93,16 +93,8 @@ void doStatic(bool hardcode, bool saveCopy) {
 	cout << "Static: waiting to start grab" << endl;
 
 	for (int i=0; i<NUM_IMAGES*2; i++) {
-//		if (waitKey(1) != -1) {
-//			return;
-//		}
 		grabber.updateScreenAndCapture();
 	}
-//imshow("input0", grabber.getImages().col(0).clone().reshape(0, CAPTURE_HEIGHT));
-//imshow("input1", grabber.getImages().col(1).clone().reshape(0, CAPTURE_HEIGHT));
-//imshow("input2", grabber.getImages().col(2).clone().reshape(0, CAPTURE_HEIGHT));
-//imshow("input3", grabber.getImages().col(3).clone().reshape(0, CAPTURE_HEIGHT));
-//waitKey();
 	cout << "Static: Done grab" << endl;
 
 	Mat heightMap = Mat::zeros(CAPTURE_HEIGHT, CAPTURE_WIDTH, CV_32FC1);

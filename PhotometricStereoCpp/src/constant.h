@@ -46,9 +46,9 @@ const int CAPTURE_IDX_OFFSET = 0; // -1 to 2
 #define ADJUSTMENT_MAT_KEY "adj"
 
 #define SHOW_ROI false
-#define SHOW_NORMAL false
+#define SHOW_NORMAL true
 #define SHOW_HEIGHTMAP true
-//#define INTERACTIVE
+#define INTERACTIVE
 
 #define MODEL_WINDOW_WIDTH 320
 #define MODEL_WINDOW_HEIGHT 240
