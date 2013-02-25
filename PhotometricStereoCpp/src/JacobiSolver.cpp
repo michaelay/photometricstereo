@@ -208,7 +208,8 @@ void JacobiSolver::normalDifferentialToHeight(Mat xDifferential, Mat yDifferenti
 		scaleDownDifferentialAndHeight(xDifferential, yDifferential, heightMat, coarseX, coarseY, coarseHeight);
 		normalDifferentialToHeight(coarseX, coarseY, coarseHeight, ++level);
 //		pyrUp(coarseHeight, heightMat);
-		resize(heightMat, heightMat, Size(numCol, numRow));
+//		resize(heightMat, heightMat, Size(numCol, numRow));
+		resize(coarseHeight, heightMat, Size(numCol, numRow));
 	}
 
 //	numRow = heightMat.rows;
