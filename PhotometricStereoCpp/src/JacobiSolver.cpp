@@ -60,7 +60,7 @@ void JacobiSolver::normalToHeight(Mat normalVectors, int imageNumRow, Mat& heigh
 #ifdef TIME_CHECK
 	cout << "Jacobi diff to height: " << boost::get_system_time() - last << endl;
 #endif
-	heightMat /= 20.0;  // scale
+//	heightMat /= 20.0;  // scale
 }
 
 // private

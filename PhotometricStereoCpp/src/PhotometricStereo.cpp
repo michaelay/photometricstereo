@@ -26,9 +26,9 @@ PhotometricStereo::PhotometricStereo() {
 	mExpectedL.at<float>(0, 1) = 1;
 	mExpectedL.at<float>(1, 0) = 0;
 	mExpectedL.at<float>(1, 1) = -1;
-	mExpectedL.at<float>(2, 0) = 1;
+	mExpectedL.at<float>(2, 0) = -1;
 	mExpectedL.at<float>(2, 1) = 0;
-	mExpectedL.at<float>(3, 0) = -1;
+	mExpectedL.at<float>(3, 0) = 1;
 	mExpectedL.at<float>(3, 1) = 0;
 }
 
@@ -123,6 +123,30 @@ Mat PhotometricStereo::getNormal(Mat images, Mat roi) {
 	// L = U * first three rows of T
 //	Mat L = eigenValuesRootMat * (rightSingular.rowRange(0, 3));
 	Mat L = rightSingular.rowRange(0, 3);
+
+	// resolve linear ambiguity
+	Mat Bnorm = rightSingular.rowRange(1, 3);
+	normalize(Bnorm.row(0), Bnorm.row(0));
+	normalize(Bnorm.row(1), Bnorm.row(1));
+	Mat permutation = Bnorm * mExpectedL;
+	cout << "permutation: " << endl;
+	cout << permutation << endl;
+	permutation.at<float>(0,0) = round(permutation.at<float>(0,0));
+	permutation.at<float>(0,1) = round(permutation.at<float>(0,1));
+	permutation.at<float>(1,0) = round(permutation.at<float>(1,0));
+	permutation.at<float>(1,1) = round(permutation.at<float>(1,1));
+	cout << permutation << endl;
+
+	Mat permutationL = Mat::zeros(3,3,CV_32FC1);
+	permutationL.at<float>(0,0) = 1.0;
+	permutationL.at<float>(1,1) = permutation.at<float>(0,0);
+	permutationL.at<float>(1,2) = permutation.at<float>(0,1);
+	permutationL.at<float>(2,1) = permutation.at<float>(1,0);
+	permutationL.at<float>(2,2) = permutation.at<float>(1,1);
+	cout << permutationL << endl;
+
+	L = permutationL * L;
+
 
 //	Mat Llast2 = L.rowRange(1, 3);
 //	Mat result = Llast2 * mExpectedL;
