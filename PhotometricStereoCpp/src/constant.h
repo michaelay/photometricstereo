@@ -60,8 +60,8 @@ const int CAPTURE_IDX_OFFSET = 0; // -1 to 2
 #define MODEL_WINDOW_Z_FAR 500.0f
 
 //const std::string SAVE_FILENAME_PREFIX = "image_";
-//const std::string SAVE_FILENAME_PREFIX = "ss_";
-const std::string SAVE_FILENAME_PREFIX = "screenshot_";
+const std::string SAVE_FILENAME_PREFIX = "ss_";
+//const std::string SAVE_FILENAME_PREFIX = "screenshot_";
 
 const std::string WINDOW_LIGHTING = "Lighting";
 const std::string WINDOW_OUTPUT = "Output";

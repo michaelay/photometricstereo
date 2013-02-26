@@ -7,6 +7,7 @@
 
 #include "ModelRenderer.h"
 #include "opencv2/highgui/highgui.hpp"
+#include "opencv2/core/core.hpp"
 #include "constant.h"
 #include <iostream>
 
@@ -103,7 +104,8 @@ void ModelRenderer::display() {
 		glTranslatef(-numCol/2, -numRow/2, 0);
 		glTranslatef(0, -numCol/30, -100);
 
-		glBegin(GL_TRIANGLE_STRIP);
+//		glBegin(GL_TRIANGLE_STRIP);
+		glBegin(GL_LINES);
 
 		for (int r=numRow-1; r>0; r--) { // from numRow-1 to 1
 			int currentRow = numRow-1-r;
@@ -163,6 +165,13 @@ ModelRenderer::~ModelRenderer() {
 }
 
 void ModelRenderer::update(Mat heightMap , Mat textureMap) {
+	// resize height map
+//	Mat smallHeightMap;
+//	pyrDown(heightMap, smallHeightMap);
+//	pyrDown(heightMap, smallHeightMap);
+//	pyrDown(heightMap, smallHeightMap);
+//	smallHeightMap /= 8;
+
 	if (FLIP_HEIGHT) {
 		mHeightMap = heightMap * -1 * HEIGHT_MAP_SCALE;
 	} else {
