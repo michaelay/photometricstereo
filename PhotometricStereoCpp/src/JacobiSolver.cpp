@@ -28,10 +28,10 @@ void JacobiSolver::computeNormalDifferential(Mat normalVectors, int imageNumRow,
 	Mat yVector = normalVectors.col(2).clone();
 
 	Mat zMat = zVector.reshape(0, imageNumRow);
-//	xDifferentialMat = xVector.reshape(0, imageNumRow) / zMat;
-//	yDifferentialMat = yVector.reshape(0, imageNumRow) / zMat;
-	xDifferentialMat = xVector.reshape(0, imageNumRow);
-	yDifferentialMat = yVector.reshape(0, imageNumRow);
+	xDifferentialMat = xVector.reshape(0, imageNumRow) / zMat;
+	yDifferentialMat = yVector.reshape(0, imageNumRow) / zMat;
+//	xDifferentialMat = xVector.reshape(0, imageNumRow);
+//	yDifferentialMat = yVector.reshape(0, imageNumRow);
 }
 
 
@@ -85,6 +85,8 @@ void JacobiSolver::scaleDownDifferentialAndHeight(
 
 	pyrDown(xDifferential, xDiffSmall);
 	pyrDown(yDifferential, yDiffSmall);
+	yDiffSmall *= 2;
+	xDiffSmall *= 2;
 	pyrDown(heightMat, heightMatSmall);
 
 //	Mat coarseXTail = xDiffSmall.colRange(1, smallSize.width);
@@ -109,7 +111,7 @@ void JacobiSolver::computeDifferentialAdjust(Mat xDifferential, Mat yDifferentia
 
 	adjust += xDifferential;
 	adjust += yDifferential;
-//	adjust /= 4.0;
+	adjust /= 4.0;
 }
 
 //void JacobiSolver::computeDifferentialAdjust(gpu::GpuMat xDifferential, gpu::GpuMat yDifferential, gpu::GpuMat& adjust) {
@@ -203,16 +205,16 @@ void JacobiSolver::normalDifferentialToHeight(Mat xDifferential, Mat yDifferenti
 		boost::system_time last = boost::get_system_time();
 #endif
 
-//	if (numRow > MIN_ROW_TO_SCALE && numCol > MIN_ROW_TO_SCALE) { // perform on scaled down version
-//		Mat coarseX;
-//		Mat coarseY;
-//		Mat coarseHeight;
-//		scaleDownDifferentialAndHeight(xDifferential, yDifferential, heightMat, coarseX, coarseY, coarseHeight);
-//		normalDifferentialToHeight(coarseX, coarseY, coarseHeight, ++level);
-////		pyrUp(coarseHeight, heightMat);
-////		resize(heightMat, heightMat, Size(numCol, numRow));
-//		resize(coarseHeight, heightMat, Size(numCol, numRow));
-//	}
+	if (numRow > MIN_ROW_TO_SCALE && numCol > MIN_ROW_TO_SCALE) { // perform on scaled down version
+		Mat coarseX;
+		Mat coarseY;
+		Mat coarseHeight;
+		scaleDownDifferentialAndHeight(xDifferential, yDifferential, heightMat, coarseX, coarseY, coarseHeight);
+		normalDifferentialToHeight(coarseX, coarseY, coarseHeight, ++level);
+//		pyrUp(coarseHeight, heightMat);
+//		resize(heightMat, heightMat, Size(numCol, numRow));
+		resize(coarseHeight, heightMat, Size(numCol, numRow));
+	}
 
 //	numRow = heightMat.rows;
 //	numCol = heightMat.cols;
