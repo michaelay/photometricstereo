@@ -18,6 +18,8 @@ public:
 	virtual ~SampleImageGenerator();
 	void generateImage(int argc, char **argv, const string& prefix);
 	//static void display();
+private:
+	int _mNumScreenshot;
 };
 
 #endif /* SAMPLEIMAGEGENERATOR_H_ */

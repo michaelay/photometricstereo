@@ -147,50 +147,6 @@ Mat PhotometricStereo::getNormal(Mat images, Mat roi) {
 
 	L = permutationL * L;
 
-
-//	Mat Llast2 = L.rowRange(1, 3);
-//	Mat result = Llast2 * mExpectedL;
-//
-//	Mat M = Mat::zeros(3, 3, CV_32FC1);
-//	bool allNegative = true;
-//
-//	// get first row of T, check if all negative
-//	const float* firstRow = rightSingular.ptr<float>(0);
-//	for (int i=0; i<rightSingular.cols; i++) {
-//		if (firstRow[i] > 0) {
-//			allNegative = false;
-//			break;
-//		}
-//	}
-//	if (allNegative) {
-//		M.at<float>(0,0) = -1;
-//	} else {
-//		M.at<float>(0,0) = 1;
-//	}
-//
-//	Mat resultAbs = abs(result);
-//	double min;
-//	double max;
-//	Point maxLoc;
-//	minMaxLoc(resultAbs, &min, &max, NULL, &maxLoc);
-//
-//	int maxRow = maxLoc.y;
-//	int maxCol = maxLoc.x;
-//
-//	M.at<float>(maxRow+1, maxCol+1) = (result.at<float>(maxRow, maxCol) > 0) ? 1 : -1;
-////      M.put(maxRow+1, maxCol+1, (ret.get(maxRow, maxCol) > 0) ? 1 : -1);
-//
-//	// the other one ( x or y )
-//	int nextRow = (maxRow+1)%2;
-//	int nextCol = (maxCol+1)%2;
-//	M.at<float>(nextRow+1, nextCol+1) = (result.at<float>(nextRow, nextCol) > 0) ? 1: -1;
-////	M.put(nextRow+1, nextCol+1, (ret.get(nextRow, nextCol) > 0) ? 1: -1);
-//
-//	M = M.t();
-//
-//
-//	L = M*L;
-
 	cout << "L':" << endl;
 	cout << L << endl;
 
@@ -216,6 +172,11 @@ Mat PhotometricStereo::getNormal(Mat images, Mat roi) {
 	for (int i = 32180; i < 32190; i++) {
 		cout << normals.row(i) << endl;
 	}
+	cout << "dump normals" << endl;
+	for (int nx = 0; nx < 320*240; nx += 320 * 2) {
+		cout << normals.row(nx + 160) << endl;
+	}
+
 
 	if (SHOW_NORMAL) {
 		showNormal(WINDOW_DEBUG, normals);
@@ -230,6 +191,9 @@ void PhotometricStereo::getHeight(Mat normals, Mat roi, Mat heightMap) {
 //	solver.normalToHeight(normals, CAPTURE_HEIGHT, heightMap);
 
 	solver.normalToHeight(normals, CAPTURE_HEIGHT, heightMap);
+	for (int nx = 0; nx < 320; nx += 2) {
+		cout << heightMap.at<float>(nx, 120) << endl;
+	}
 	if (SHOW_HEIGHTMAP) {
 		showHeightMap(WINDOW_DEBUG, heightMap);
 	}

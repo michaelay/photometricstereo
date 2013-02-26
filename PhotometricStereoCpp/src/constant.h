@@ -14,9 +14,10 @@
 #define CAPTURE_HEIGHT 240
 #define CAPTURE_FPS 50
 #define ROI_THRESHOLD 0.05
+//#define ROI_THRESHOLD 0.0001
 
-#define MAX_NUM_ITERATION 500
-#define GAUSS_SEIDEL_THRESHOLD 0.0001 // 0.0001
+#define MAX_NUM_ITERATION 5000
+#define GAUSS_SEIDEL_THRESHOLD 0.001 // 0.0001
 #define MIN_ROW_TO_SCALE 8
 
 #define RECORD_VIDEO false
@@ -30,7 +31,8 @@ const float MODEL_ANGLE_STEP = 3.0f;
 
 #define WEBCAM_NUMBER 1
 
-const int HEIGHT_MAP_SCALE = 3000; //6000;
+//const int HEIGHT_MAP_SCALE = 3000; //6000;
+const int HEIGHT_MAP_SCALE = 1; //6000;
 #ifdef WIN
 const int WEBCAM_NUMBER_FLUSH = 1;
 const bool FLIP_HEIGHT = false;
@@ -46,9 +48,9 @@ const int CAPTURE_IDX_OFFSET = 0; // -1 to 2
 #define ADJUSTMENT_MAT_KEY "adj"
 
 #define SHOW_ROI false
-#define SHOW_NORMAL true
+#define SHOW_NORMAL false
 #define SHOW_HEIGHTMAP true
-#define INTERACTIVE
+//#define INTERACTIVE
 
 #define MODEL_WINDOW_WIDTH 320
 #define MODEL_WINDOW_HEIGHT 240
@@ -58,7 +60,8 @@ const int CAPTURE_IDX_OFFSET = 0; // -1 to 2
 #define MODEL_WINDOW_Z_FAR 500.0f
 
 //const std::string SAVE_FILENAME_PREFIX = "image_";
-const std::string SAVE_FILENAME_PREFIX = "ss_";
+//const std::string SAVE_FILENAME_PREFIX = "ss_";
+const std::string SAVE_FILENAME_PREFIX = "screenshot_";
 
 const std::string WINDOW_LIGHTING = "Lighting";
 const std::string WINDOW_OUTPUT = "Output";

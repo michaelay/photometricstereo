@@ -130,6 +130,7 @@ void GaussSeidelSolver::normalDifferentialToHeight(Mat xDifferential, Mat yDiffe
 	int numCol = heightMat.cols;
 
 	if (numRow > MIN_ROW_TO_SCALE && numCol > MIN_ROW_TO_SCALE) { // perform on scaled down version
+		std::cout << "pyramid" << std::endl;
 		Mat coarseX;
 		Mat coarseY;
 		Mat coarseHeight;

@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <map>
 #include <math.h>
 #include <sys/time.h>
 #include "../constant.h"
@@ -28,6 +29,7 @@
 using namespace std;
 
 #define PI 3.14159265
+
 
 void takeScreenshot(const char* screenshotFile)
 {
@@ -92,15 +94,36 @@ void drawImage(float angle) {
     // translate the draw by z = -4.0
     // Note this when you decrease z like -8.0 the drawing will looks far , or smaller.
     glTranslatef(0.0,0.0,-4.0);
+
+    GLfloat mat_specular[] = { 0.0, 0.0, 0.0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
+
+	GLfloat mat_shininess[] = { 0.01, 0.01, 0.01 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
+
+	GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse);
+
+
     // Red color used to draw.
-    glColor3f(0.9, 0.3, 0.2);
+//    glColor3f(0.9, 0.3, 0.2);
     // scaling transfomation
     // built-in (glut library) function , draw you a sphere.
     GLdouble radius = 1;
     glutSolidSphere(radius,20,20);
     // Flush buffers to screen
 
+
+
+    GLfloat light_diffuse[] = { 1.0, 1.0, 1.0 };
+	GLfloat light_specular[] = { 0.01, 0.01, 0.01 };
+	GLfloat light_ambient[] = { 0.01, 0.01, 0.01 };
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
 
     glFlush();
     // swap buffers called because we are using double buffering
@@ -108,19 +131,55 @@ void drawImage(float angle) {
 }
 
 void idle() {
-	// draw all images and save
-	float angle = 0;
+	drawImage(PI / 2);
+	drawImage(PI / 2);
+	takeScreenshot("screenshot_0.png");
+	drawImage(PI * 1.5);
+	drawImage(PI * 1.5);
+	takeScreenshot("screenshot_1.png");
+	drawImage(0);
+	drawImage(0);
+	takeScreenshot("screenshot_2.png");
+	drawImage(PI);
+	drawImage(PI);
+	takeScreenshot("screenshot_3.png");
+	exit(0);
+}
+
+void generateAndCaptureTestImage() {
+
+	float angle[4];
+	angle[0] = PI / 2;
+	angle[1] = 3 / 2 * PI;
+	angle[2] = 0;
+	angle[3] = PI;
+
 	for (int i=0; i<NUM_IMAGE; i++) {
-		angle = 2.0 * PI / NUM_IMAGE * i;
-		drawImage(angle);
+		drawImage(angle[i]);
+		sleep(1);
 		// save image
 	    ostringstream oss;
 	    oss << "screenshot_" << i << ".png";
 	    string filename = oss.str();
 	    takeScreenshot(filename.c_str());
-
 	}
+
 }
+
+//void idle() {
+//	// draw all images and save
+//	float angle = 0;
+//	for (int i=0; i<NUM_IMAGE; i++) {
+//		angle = 2.0 * PI / NUM_IMAGE * i;
+//		drawImage(angle);
+//		// save image
+//	    ostringstream oss;
+//	    oss << "screenshot_" << i << ".png";
+//	    string filename = oss.str();
+//	    takeScreenshot(filename.c_str());
+//
+//	}
+//}
 
 
 void display()
@@ -162,6 +221,7 @@ SampleImageGenerator::SampleImageGenerator() {
 	ilInit();
 //	iluInit();
 //	ilutRenderer(ILUT_OPENGL);
+	_mNumScreenshot = 0;
 }
 
 SampleImageGenerator::~SampleImageGenerator() {
@@ -179,12 +239,17 @@ SampleImageGenerator::generateImage(int argc, char **argv, const string& prefix)
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glShadeModel (GL_SMOOTH);
 
-	//    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat mat_shininess[] = { 50.0 };
 	GLfloat light_position[] = { sqrt(2.0), sqrt(2.0), -2.0, 0.0 };
 
-	//    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+	GLfloat mat_specular[] = { 0.0, 0.0, 1.0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
+
+	GLfloat mat_shininess[] = { 1.0, 0.0, 0.0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
+
+	GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse);
+
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);

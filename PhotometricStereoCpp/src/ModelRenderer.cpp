@@ -84,8 +84,9 @@ void ModelRenderer::display() {
 
 	if (mHeightMap.rows != 0 && mHeightMap.cols != 0) {
 
-		float factor = 100.0f / mHeightMap.cols;
-		glScalef(factor, factor, factor);
+//		float factor = 100.0f / mHeightMap.cols;
+//		float factor = 1.0f / mHeightMap.cols;
+//		glScalef(factor, factor, factor);
 		glRotatef(mAngle, 0.0f, 1.0f, 0.0f);
 
 		int numRow = mHeightMap.rows;
@@ -100,7 +101,7 @@ void ModelRenderer::display() {
 		glColor3f(0.5f, 0.5f, 0.5f);
 
 		glTranslatef(-numCol/2, -numRow/2, 0);
-		glTranslatef(0, -numCol/30, -20);
+		glTranslatef(0, -numCol/30, -100);
 
 		glBegin(GL_TRIANGLE_STRIP);
 
@@ -174,12 +175,12 @@ void ModelRenderer::update(Mat heightMap , Mat textureMap) {
 	if (MODEL_ROTATE) {
 		// update angle
 		mAngle += MODEL_ANGLE_STEP * mSign;
-		cout << "angle" << mAngle << endl;
+//		cout << "angle" << mAngle << endl;
 		if (mAngle >= MODEL_ANGLE_MAX) {
-			cout << "plus" << endl;
+//			cout << "plus" << endl;
 			mSign = -1.0f;
 		} else if (mAngle <= MODEL_ANGLE_MIN) {
-			cout << "neg" << endl;
+//			cout << "neg" << endl;
 			mSign = 1.0f;
 		}
 	}
