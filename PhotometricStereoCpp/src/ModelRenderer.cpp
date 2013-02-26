@@ -169,7 +169,7 @@ void ModelRenderer::update(Mat heightMap , Mat textureMap) {
 //	Mat smallHeightMap;
 //	pyrDown(heightMap, smallHeightMap);
 //	pyrDown(heightMap, smallHeightMap);
-//	pyrDown(heightMap, smallHeightMap);
+//	cvPyrDown(heightMap, smallHeightMap);
 //	smallHeightMap /= 8;
 
 	if (FLIP_HEIGHT) {
@@ -177,6 +177,13 @@ void ModelRenderer::update(Mat heightMap , Mat textureMap) {
 	} else {
 		mHeightMap = heightMap * HEIGHT_MAP_SCALE;
 	}
+//
+//	Size smallSize;
+//	smallSize.height = 32;
+//	smallSize.width = 24;
+//	cvResize(mHeightMap, mHeightMap, smallSize);
+//	mHeightMap /= 10;
+
 	mTextureMap = textureMap;
 	flip(mTextureMap, mTextureMap, 0);
 	mTextureMap *= 2;
