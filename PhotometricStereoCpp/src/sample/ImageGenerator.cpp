@@ -84,7 +84,8 @@ void takeScreenshot(const char* screenshotFile)
 //}
 
 void drawImage(float angle) {
-	GLfloat light_position[] = { cos(angle), sin(angle), -2.0, 0.0 };
+	GLfloat light_position[] = { 10000* cos(angle), 10000* sin(angle), -10001.0, 0.0 };
+	cout << "angles: " << 10000 * cos(angle) << "|" << 10000 * sin(angle) << endl;
 
     glMatrixMode(GL_MODELVIEW);
     // clear the drawing buffer.
