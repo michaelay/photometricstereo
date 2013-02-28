@@ -21,15 +21,20 @@ using namespace cv;
 using namespace std;
 
 PhotometricStereo::PhotometricStereo() {
-	mExpectedL = Mat(4, 2, CV_32FC1);
-	mExpectedL.at<float>(0, 0) = 0;
-	mExpectedL.at<float>(0, 1) = 1;
-	mExpectedL.at<float>(1, 0) = 0;
-	mExpectedL.at<float>(1, 1) = -1;
-	mExpectedL.at<float>(2, 0) = -1;
-	mExpectedL.at<float>(2, 1) = 0;
-	mExpectedL.at<float>(3, 0) = 1;
-	mExpectedL.at<float>(3, 1) = 0;
+	// openGL coordinate x -> right, y -> up, z -> outward (from screen to eye)
+	// opencv coordinate x -> right, y -> down, z -> inward (from eye to screen)
+	// http://stackoverflow.com/questions/9081900/reference-coordinate-system-changes-between-opencv-opengl-and-android-sensor
+	// opencv coordinate system
+	mExpectedLvalues[0][0] = 0.0;
+	mExpectedLvalues[0][1] = -1.0;
+	mExpectedLvalues[1][0] = 0.0;
+	mExpectedLvalues[1][1] = 1.0;
+	mExpectedLvalues[2][0] = 1.0;
+	mExpectedLvalues[2][1] = 0.0;
+	mExpectedLvalues[3][0] = -1.0;
+	mExpectedLvalues[3][1] = 0.0;
+	mExpectedLz = -1;
+	mExpectedL= Mat(4, 2, CV_32FC1, mExpectedLvalues);
 }
 
 PhotometricStereo::~PhotometricStereo() {
@@ -91,25 +96,10 @@ Mat PhotometricStereo::getNormal(Mat images, Mat roi) {
 	Mat At = A.t();
 	Mat ATA = At * A;
 
-	cout << "A:" << endl;
-	for (int i = 32180; i < 32190; i++) {
-		cout << A.row(i) << endl;
-	}
-
-
 	Mat eigenvalues; // eigenvalue
 	Mat leftSingular; // left singular
 	Mat rightSingular; // right singular
 	SVD::compute(ATA, eigenvalues, leftSingular, rightSingular);
-
-	// square root U
-	Mat eigenvaluesRoot;
-	sqrt(eigenvalues, eigenvaluesRoot);
-
-	Mat eigenValuesRootMat = Mat::zeros(3, 3, CV_32FC1);
-	eigenValuesRootMat.at<float>(0, 0) = eigenvaluesRoot.at<float>(0);
-	eigenValuesRootMat.at<float>(1, 1) = eigenvaluesRoot.at<float>(1);
-	eigenValuesRootMat.at<float>(2, 2) = eigenvaluesRoot.at<float>(2);
 
 	cout << "S" << endl;
 	cout << leftSingular << endl;
@@ -117,18 +107,24 @@ Mat PhotometricStereo::getNormal(Mat images, Mat roi) {
 	cout << rightSingular << endl;
 	cout << "eigenvalues" << endl;
 	cout << eigenvalues << endl;
-	cout << "eignervalues root mat" << endl;
-	cout << eigenValuesRootMat << endl;
 
 	// L = U * first three rows of T
-//	Mat L = eigenValuesRootMat * (rightSingular.rowRange(0, 3));
 	Mat L = rightSingular.rowRange(0, 3);
+	cout << "L1:" << endl;
+	cout << L << endl;
 
 	// resolve linear ambiguity
-	Mat Bnorm = rightSingular.rowRange(1, 3);
-	normalize(Bnorm.row(0), Bnorm.row(0));
-	normalize(Bnorm.row(1), Bnorm.row(1));
-	Mat permutation = Bnorm * mExpectedL;
+	Mat permutation = rightSingular.rowRange(1,3).clone();
+	normalize(permutation.row(0), permutation.row(0));
+	normalize(permutation.row(1), permutation.row(1));
+//	Mat Bnorm = rightSingular.rowRange(1, 3);
+//	normalize(Bnorm.row(0), Bnorm.row(0));
+//	normalize(Bnorm.row(1), Bnorm.row(1));
+	cout << "L2:" << endl;
+	cout << L << endl;
+
+//	Mat permutation = Bnorm * mExpectedL;
+	permutation = permutation * mExpectedL;
 	cout << "permutation: " << endl;
 	cout << permutation << endl;
 	permutation.at<float>(0,0) = round(permutation.at<float>(0,0));
@@ -136,6 +132,8 @@ Mat PhotometricStereo::getNormal(Mat images, Mat roi) {
 	permutation.at<float>(1,0) = round(permutation.at<float>(1,0));
 	permutation.at<float>(1,1) = round(permutation.at<float>(1,1));
 	cout << permutation << endl;
+
+
 
 	Mat permutationL = Mat::zeros(3,3,CV_32FC1);
 	permutationL.at<float>(0,0) = 1.0;
@@ -167,14 +165,13 @@ Mat PhotometricStereo::getNormal(Mat images, Mat roi) {
 		normalize(normals.row(j), normals.row(j));
 	}
 
-//	for (int i = 28800; i < 28810; i++) {
-	cout << "normals:" << endl;
-	for (int i = 32180; i < 32190; i++) {
-		cout << normals.row(i) << endl;
-	}
-	cout << "dump normals" << endl;
+	cout << "dump normals vertical" << endl;
 	for (int nx = 0; nx < 320*240; nx += 320 * 2) {
 		cout << normals.row(nx + 160) << endl;
+	}
+	cout << "dump normals horizontal" << endl;
+	for (int ny = 320*240/2 - 120 -1; ny < 320*240/2 + 120; ny++) {
+		cout << normals.row(ny + 120) << endl;
 	}
 
 

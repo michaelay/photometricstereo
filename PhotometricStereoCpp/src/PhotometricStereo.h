@@ -17,6 +17,8 @@ using namespace cv;
 class PhotometricStereo {
 private:
 	Mat mExpectedL;
+	float mExpectedLvalues[4][2];
+	float mExpectedLz;
 	JacobiSolver solver;
 //	VideoWriter mVideoWriter;
 public:
