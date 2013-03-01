@@ -6,6 +6,8 @@ Build using Eclipse CDT
 
 * boost 
 * opencv 
+* glfw
+* devil 
 
 ## Install instruction 
 
@@ -14,3 +16,6 @@ Build using Eclipse CDT
 * brew install opencv 
 * brew install boost
 * brew install devil
+* brew install glfw
+
+* add the line `#define ILUT_USE_OPENGL` in ilut.h (under /usr/local/Cellar/devil/[version]/include/IL)

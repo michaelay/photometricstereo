@@ -25,10 +25,7 @@
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.debug.126669052" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.debug">
 								<option id="macosx.cpp.link.option.flags.29046165" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-framework GLUT -framework OpenGL -framework Cocoa" valueType="string"/>
 								<option id="macosx.cpp.link.option.paths.302364697" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/opencv/2.4.3/lib/"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/glfw/2.7.7/lib/"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/boost/1.53.0/lib/"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/devil/1.7.8/lib/"/>
+									<listOptionValue builtIn="false" value="/usr/local/lib"/>
 								</option>
 								<option id="macosx.cpp.link.option.libs.248133045" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="opencv_core"/>
@@ -56,10 +53,7 @@
 								<option id="gnu.cpp.compilermacosx.exe.debug.option.optimization.level.1845927626" name="Optimization Level" superClass="gnu.cpp.compilermacosx.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level.559415914" name="Debug Level" superClass="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.558100707" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/boost/1.53.0/include"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/opencv/2.4.3/include"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/glfw/2.7.7/include"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/devil/1.7.8/include"/>
+									<listOptionValue builtIn="false" value="/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.117906749" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
