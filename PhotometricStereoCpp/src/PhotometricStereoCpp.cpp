@@ -36,9 +36,9 @@ int main(int argc, char *argv[]) {
 
 	try {
 //		calibrate();
-//		doVideo(false, false);
+//		doVideo(true, false);
 
-		doStatic(true, false); // hardcode, savecopy
+		doStatic(false, false); // hardcode, savecopy
 
 //		SampleImageGenerator* generator = new SampleImageGenerator();
 //		generator->generateImage(argc, argv, "ss_");
@@ -101,7 +101,7 @@ void doStatic(bool hardcode, bool saveCopy) {
 	Mat textureMap = Mat::zeros(CAPTURE_HEIGHT, CAPTURE_WIDTH, CV_32FC1);
 
 	ps.getHeightMap(grabber.getImages(), heightMap);
-	grabber.getAvgImage(textureMap);
+	grabber.getAvgImage(textureMap); // TODO: get albedo map from ps object instead
 
 	cout << "Static: Done processing" << endl;
 

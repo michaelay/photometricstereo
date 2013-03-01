@@ -23,15 +23,21 @@ JacobiSolver::~JacobiSolver() {
 }
 
 void JacobiSolver::computeNormalDifferential(Mat normalVectors, int imageNumRow, Mat& xDifferentialMat, Mat& yDifferentialMat) {
-	Mat zVector = normalVectors.col(0).clone();
-	Mat xVector = normalVectors.col(1).clone();
-	Mat yVector = normalVectors.col(2).clone();
+	// TODO: do not clone, reshape twice
+//	Mat zVector = normalVectors.col(0).clone().reshape(0, imageNumRow);
+//	Mat xVector = normalVectors.col(1).clone().reshape(0, imageNumRow);
+//	Mat yVector = normalVectors.col(2).clone().reshape(0, imageNumRow);
+//
+//	xDifferentialMat = xVector / zVector;
+//	yDifferentialMat = yVector / zVector;
 
-	Mat zMat = zVector.reshape(0, imageNumRow);
-	xDifferentialMat = xVector.reshape(0, imageNumRow) / zMat;
-	yDifferentialMat = yVector.reshape(0, imageNumRow) / zMat;
-//	xDifferentialMat = xVector.reshape(0, imageNumRow);
-//	yDifferentialMat = yVector.reshape(0, imageNumRow);
+	xDifferentialMat = normalVectors.col(1) / normalVectors.col(0);
+	xDifferentialMat = xDifferentialMat.reshape(0, imageNumRow);
+//	xDifferentialMat.reshape(0, imageNumRow);
+
+	yDifferentialMat = normalVectors.col(2) / normalVectors.col(0);
+	yDifferentialMat = yDifferentialMat.reshape(0, imageNumRow);
+//	yDifferentialMat.reshape(0, imageNumRow);
 }
 
 

@@ -33,7 +33,7 @@ PhotometricStereo::PhotometricStereo() {
 	mExpectedLvalues[2][1] = 0.0;
 	mExpectedLvalues[3][0] = -1.0;
 	mExpectedLvalues[3][1] = 0.0;
-	mExpectedLz = -1;
+	mExpectedLz = -1; // not used yet
 	mExpectedL= Mat(4, 2, CV_32FC1, mExpectedLvalues);
 }
 
@@ -120,44 +120,42 @@ Mat PhotometricStereo::getNormal(Mat images, Mat roi) {
 //	Mat Bnorm = rightSingular.rowRange(1, 3);
 //	normalize(Bnorm.row(0), Bnorm.row(0));
 //	normalize(Bnorm.row(1), Bnorm.row(1));
-	cout << "L2:" << endl;
-	cout << L << endl;
+//	cout << "L2:" << endl;
+//	cout << L << endl;
 
 //	Mat permutation = Bnorm * mExpectedL;
 	permutation = permutation * mExpectedL;
-	cout << "permutation: " << endl;
-	cout << permutation << endl;
-	permutation.at<float>(0,0) = round(permutation.at<float>(0,0));
-	permutation.at<float>(0,1) = round(permutation.at<float>(0,1));
-	permutation.at<float>(1,0) = round(permutation.at<float>(1,0));
-	permutation.at<float>(1,1) = round(permutation.at<float>(1,1));
-	cout << permutation << endl;
-
-
+//	cout << "permutation: " << endl;
+//	cout << permutation << endl;
+//	permutation.at<float>(0,0) = round(permutation.at<float>(0,0));
+//	permutation.at<float>(0,1) = round(permutation.at<float>(0,1));
+//	permutation.at<float>(1,0) = round(permutation.at<float>(1,0));
+//	permutation.at<float>(1,1) = round(permutation.at<float>(1,1));
+//	cout << permutation << endl;
 
 	Mat permutationL = Mat::zeros(3,3,CV_32FC1);
 	permutationL.at<float>(0,0) = 1.0;
-	permutationL.at<float>(1,1) = permutation.at<float>(0,0);
-	permutationL.at<float>(1,2) = permutation.at<float>(0,1);
-	permutationL.at<float>(2,1) = permutation.at<float>(1,0);
-	permutationL.at<float>(2,2) = permutation.at<float>(1,1);
+	permutationL.at<float>(1,1) = round(permutation.at<float>(0,0));
+	permutationL.at<float>(1,2) = round(permutation.at<float>(0,1));
+	permutationL.at<float>(2,1) = round(permutation.at<float>(1,0));
+	permutationL.at<float>(2,2) = round(permutation.at<float>(1,1));
 	cout << permutationL << endl;
 
 	L = permutationL * L;
 
-	cout << "L':" << endl;
+	cout << "permutated L:" << endl;
 	cout << L << endl;
 
 	Mat normals;
 	normals = L * A.t();
 	normals = normals.t();
 
-//	// strip by roi
-//	Mat flipRoi;
-//	bitwise_not(roi, flipRoi);
-//	for (int i=0; i<3; i++) {
-//		normals.col(i).setTo(0, flipRoi);
-//	}
+	// strip by roi
+	Mat flipRoi;
+	bitwise_not(roi, flipRoi);
+	for (int i=0; i<3; i++) {
+		normals.col(i).setTo(0, flipRoi);
+	}
 
 	// normalize
 	Mat row;

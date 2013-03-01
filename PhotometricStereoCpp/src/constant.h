@@ -29,7 +29,7 @@ const float MODEL_ANGLE_STEP = 3.0f;
 
 //const float MODEL_ANGLE_MIN = 25.0f;
 
-#define WEBCAM_NUMBER 1
+#define WEBCAM_NUMBER 0
 
 //const int HEIGHT_MAP_SCALE = 3000; //6000;
 const int HEIGHT_MAP_SCALE = 1; //6000;
@@ -59,9 +59,9 @@ const int CAPTURE_IDX_OFFSET = 0; // -1 to 2
 #define MODEL_WINDOW_Z_NEAR 1.0f
 #define MODEL_WINDOW_Z_FAR 500.0f
 
-//const std::string SAVE_FILENAME_PREFIX = "image_";
+const std::string SAVE_FILENAME_PREFIX = "image_";
 //const std::string SAVE_FILENAME_PREFIX = "ss_";
-const std::string SAVE_FILENAME_PREFIX = "screenshot_";
+//const std::string SAVE_FILENAME_PREFIX = "screenshot_";
 
 const std::string WINDOW_LIGHTING = "Lighting";
 const std::string WINDOW_OUTPUT = "Output";
