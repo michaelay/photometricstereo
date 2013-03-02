@@ -8,7 +8,7 @@
 #ifndef LIGHTINGPANEL_H_
 #define LIGHTINGPANEL_H_
 
-#include "constant.h"
+#include "../constant.h"
 
 #include <vector>
 #include <string>

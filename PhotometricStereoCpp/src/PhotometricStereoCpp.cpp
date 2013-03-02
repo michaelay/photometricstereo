@@ -7,19 +7,21 @@
 //============================================================================
 
 #include <iostream>
-#include "constant.h"
-#include "ImageGrabber.h"
-#include "LightingPanel.h"
-#include "PhotometricStereo.h"
-#include "ModelRenderer.h"
-#include "InputAdjuster.h"
 #include <GL/glfw.h>
-#include "boost/date_time/posix_time/posix_time.hpp"
+#include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include "Display.h"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+#include "constant.h"
+#include "PhotometricStereo.h"
+
+#include "ui/ImageGrabber.h"
+#include "ui/LightingPanel.h"
+#include "ui/ModelRenderer.h"
+#include "ui/InputAdjuster.h"
+#include "ui/Display.h"
 
 #include "sample/ImageGenerator.h"
 
@@ -32,13 +34,11 @@ void calibrate();
 
 int main(int argc, char *argv[]) {
 
-//	Display* display = Display::getInstance();
-
 	try {
 //		calibrate();
 //		doVideo(true, false);
 
-		doStatic(false, false); // hardcode, savecopy
+		doStatic(true, false); // hardcode, savecopy
 
 //		SampleImageGenerator* generator = new SampleImageGenerator();
 //		generator->generateImage(argc, argv, "ss_");
@@ -105,7 +105,9 @@ void doStatic(bool hardcode, bool saveCopy) {
 
 	cout << "Static: Done processing" << endl;
 
+
 	while (true) {
+		// TODO: set heightmap and texturemap only once
 		display->updateModel(heightMap.clone(), textureMap.clone());
 		display->draw();
 		usleep(100*1000);

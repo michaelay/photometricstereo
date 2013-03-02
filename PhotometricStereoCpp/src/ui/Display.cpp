@@ -20,7 +20,7 @@
 #include <iostream>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-#include "constant.h"
+#include "../constant.h"
 #include <iostream>
 
 using namespace cv;
@@ -66,23 +66,8 @@ Display::~Display() {
 
 void Display::draw() {
 	drawLight();
-
 	drawModel();
-
-
-//	glViewport(0, SCREEN_MARGIN_HEIGHT, SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT);
-//	glScissor(0, SCREEN_MARGIN_HEIGHT, SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT);
-//	glClearColor(0, 1, 1, 0);
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//	drawDebug1();
-
 	drawHeightMap();
-
-	//	glViewport(SCREEN_WIDTH-SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT, SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT);
-//	glScissor(SCREEN_WIDTH-SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT, SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT);
-//	glClearColor(1, 0, 0, 0);
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//	drawDebug3();
 
 	// Swap buffers
     glfwSwapBuffers();
@@ -211,27 +196,30 @@ void Display::drawModel() {
 	glScissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 }
-void Display::drawDebug1() {
-	glPushMatrix();
-	glPopMatrix();
-}
+//void Display::drawDebug1() {
+//	glPushMatrix();
+//	glPopMatrix();
+//}
 void Display::drawHeightMap() {
 	glPushMatrix();
-	imageDrawer(image2);
-	glPopMatrix();
-}
-void Display::drawDebug3() {
-	glPushMatrix();
-	glPopMatrix();
-}
-
-void Display::imageDrawer(Mat image) {
+//	imageDrawer(image2);
 	glEnable(GL_DEPTH_TEST);
-//	glRasterPos2f(0.6f , -1.0f);
 	glRasterPos2f(-1.0f , -0.4f);
-	glDrawPixels(image.cols, image.rows, GL_LUMINANCE, GL_UNSIGNED_BYTE, image.data);
+	glDrawPixels(mHeightMap.cols, mHeightMap.rows, GL_LUMINANCE, GL_UNSIGNED_BYTE, mHeightMap.data);
 	glRasterPos2f(-1.0f, -1.0f);
+	glPopMatrix();
 }
+//void Display::drawDebug3() {
+//	glPushMatrix();
+//	glPopMatrix();
+//}
+
+//void Display::imageDrawer(Mat image) {
+//	glEnable(GL_DEPTH_TEST);
+//	glRasterPos2f(-1.0f , -0.4f);
+//	glDrawPixels(image.cols, image.rows, GL_LUMINANCE, GL_UNSIGNED_BYTE, image.data);
+//	glRasterPos2f(-1.0f, -1.0f);
+//}
 
 /**
  * Update lighting according to the direction specified
@@ -250,15 +238,15 @@ void Display::updateModel(Mat heightMap, Mat textureMap) {
 /**
  * Display images in OpenCV Mat grayscale format CV_32FC1, range 0 to 1
  */
-void Display::updateDebug1(Mat image) {
-}
-
+//void Display::updateDebug1(Mat image) {
+//}
+//
 void Display::updateHeightMap(Mat image) {
-	flip(image, image2, 0);
-	image2 *= 255.0;
-	image2.convertTo(image2, CV_8UC1);
+	flip(image, mHeightMap, 0);
+	mHeightMap *= 255.0;
+	mHeightMap.convertTo(mHeightMap, CV_8UC1);
 }
-
-void Display::updateDebug3(Mat image) {
-}
+//
+//void Display::updateDebug3(Mat image) {
+//}
 

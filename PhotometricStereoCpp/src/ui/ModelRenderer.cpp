@@ -8,7 +8,7 @@
 #include "ModelRenderer.h"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/core/core.hpp"
-#include "constant.h"
+#include "../constant.h"
 #include <iostream>
 
 #if defined(__APPLE__)
@@ -70,6 +70,7 @@ ModelRenderer* ModelRenderer::mInstance = 0;
 
 void ModelRenderer::display() {
 
+	GLuint mTexture;
 	glGenTextures(1, &mTexture);
 	glBindTexture(GL_TEXTURE_2D, mTexture);
 	glEnable(GL_TEXTURE_2D);

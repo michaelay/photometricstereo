@@ -9,7 +9,7 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 //#include "opencv2/gpu/gpu.hpp"
-#include "constant.h"
+#include "../constant.h"
 #include <iostream>
 
 GaussSeidelSolver::GaussSeidelSolver() {

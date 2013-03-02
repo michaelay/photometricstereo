@@ -9,7 +9,7 @@
 #include "InputAdjuster.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include "constant.h"
+#include "../constant.h"
 
 InputAdjuster::InputAdjuster() {
 	// TODO Auto-generated constructor stub

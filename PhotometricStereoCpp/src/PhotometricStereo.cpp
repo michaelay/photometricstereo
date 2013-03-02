@@ -7,12 +7,12 @@
 
 #include "PhotometricStereo.h"
 #include "constant.h"
-#include "GaussSeidelSolver.h"
-#include "JacobiSolver.h"
+#include "algo/GaussSeidelSolver.h"
+#include "algo/JacobiSolver.h"
 #include <iostream>
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
-#include "Display.h"
+#include "ui/Display.h"
 #include "boost/thread.hpp"
 #include "boost/date_time/posix_time/posix_time.hpp"
 
@@ -186,9 +186,9 @@ void PhotometricStereo::getHeight(Mat normals, Mat roi, Mat heightMap) {
 //	solver.normalToHeight(normals, CAPTURE_HEIGHT, heightMap);
 
 	solver.normalToHeight(normals, CAPTURE_HEIGHT, heightMap);
-	for (int nx = 0; nx < 320; nx += 2) {
-		cout << heightMap.at<float>(nx, 120) << endl;
-	}
+//	for (int nx = 0; nx < 320; nx += 2) {
+//		cout << heightMap.at<float>(nx, 120) << endl;
+//	}
 	if (SHOW_HEIGHTMAP) {
 		showHeightMap(WINDOW_DEBUG, heightMap);
 	}

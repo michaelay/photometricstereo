@@ -23,7 +23,6 @@ private:
 	static ModelRenderer* mInstance;
 	Mat mHeightMap;
 	Mat mTextureMap;
-	GLuint mTexture;
 
 	float mAngle;
 	float mSign;

@@ -20,7 +20,7 @@ private:
 	static const int SCREEN_MARGIN_WIDTH = 315; // (1680 - 1060) / 2;
 	static const int SCREEN_MARGIN_HEIGHT = 315; // (1680 - 1060) / 2;
 	ModelRenderer mRenderer;
-	Mat image2;
+	Mat mHeightMap;
 
 public:
 	static Display* getInstance();
@@ -53,9 +53,9 @@ public:
 	/**
 	 * Display images in OpenCV Mat grayscale format CV_32FC1, range 0 to 1
 	 */
-	void updateDebug1(Mat image);
+//	void updateDebug1(Mat image);
 	void updateHeightMap(Mat image);
-	void updateDebug3(Mat image);
+//	void updateDebug3(Mat image);
 
 	void draw();
 
@@ -65,7 +65,7 @@ public:
 
 private:
 
-	void imageDrawer(Mat image);
+//	void imageDrawer(Mat image);
 
 	void drawLight();
 	void drawModel();

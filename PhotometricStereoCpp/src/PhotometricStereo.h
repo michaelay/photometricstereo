@@ -10,7 +10,7 @@
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
-#include "JacobiSolver.h"
+#include "algo/JacobiSolver.h"
 
 using namespace cv;
 

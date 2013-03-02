@@ -8,7 +8,7 @@
 #ifndef IMAGEGRABBER_H_
 #define IMAGEGRABBER_H_
 
-#include "constant.h"
+#include "../constant.h"
 #include "LightingPanel.h"
 #include "InputAdjuster.h"
 
