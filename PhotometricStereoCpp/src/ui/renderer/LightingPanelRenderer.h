@@ -8,8 +8,8 @@
 #ifndef LIGHTINGPANEL_H_
 #define LIGHTINGPANEL_H_
 
-#include "../constant.h"
-
+#include "Renderer.h"
+#include "../../constant.h"
 #include <vector>
 #include <string>
 #include "opencv2/core/core.hpp"
@@ -19,7 +19,7 @@ using namespace cv;
 
 typedef vector<Mat > DirectionMatList;
 
-class LightingPanel {
+class LightingPanelRenderer : public Renderer {
 public:
 	enum LightingPanelDirection {
 		UP,
@@ -28,17 +28,16 @@ public:
 		RIGHT
 	};
 	static const int NUM_DIRECTION=4;
-	static const int ROW=1050;
-	static const int COL=1680;
 
 private:
-	DirectionMatList mDirectionMatList;
+	LightingPanelDirection mCurrentDirection;
 public:
-	LightingPanel();
-	virtual ~LightingPanel();
-	void showDirection(LightingPanelDirection dir);
-private:
-	void initDirectionMatList();
+	LightingPanelRenderer();
+	virtual ~LightingPanelRenderer();
+
+	void nextDirection();
+	void setDirection(LightingPanelDirection dir);
+	void render();
 };
 
 #endif /* LIGHTINGPANEL_H_ */

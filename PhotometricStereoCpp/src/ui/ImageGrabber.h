@@ -9,8 +9,7 @@
 #define IMAGEGRABBER_H_
 
 #include "../constant.h"
-#include "LightingPanel.h"
-#include "InputAdjuster.h"
+#include "renderer/LightingPanelRenderer.h"
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -28,15 +27,14 @@ private:
 	Mat mOriginalImages;
 	int mCurrentIdx;
 	Ptr<VideoCapture> mCapture;
-	vector<LightingPanel::LightingPanelDirection> mDirectionMap;
-//	LightingPanel mLightPanel;
-	bool mHardcode;
-	bool mSaveCopy;
+	vector<LightingPanelRenderer::LightingPanelDirection> mDirectionMap;
+	static bool mHardcode;
 	boost::system_time mLastUpdateScreen;
-	InputAdjuster mAdjuster;
 
 public:
-	ImageGrabber(bool hardcode=false, bool saveCopy=false);
+	static void setHardcode(bool hardcode);
+	static ImageGrabber* getInstance();
+
 	virtual ~ImageGrabber();
 
 	void updateScreenAndCapture(bool adjustInput=true);
@@ -49,6 +47,8 @@ public:
 
 
 private:
+	ImageGrabber(); // create using getInstance only
+
 	void updateScreen();
 	void captureImage();
 	void captureImage(bool adjustInput);

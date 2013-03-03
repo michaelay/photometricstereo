@@ -6,6 +6,13 @@
 
 #include <string>
 
+// UI size
+#define FULL_SCREEN 0
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 600;
+const int SCREEN_MARGIN_WIDTH = 200;
+const int SCREEN_MARGIN_HEIGHT = 200;
+
 #define TIME_CHECK
 //#define USE_GPU
 

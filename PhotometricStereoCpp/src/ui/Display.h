@@ -9,7 +9,7 @@
 #define DISPLAY_H_
 
 #include "opencv2/core/core.hpp"
-#include "ModelRenderer.h"
+#include "renderer/ModelRenderer.h"
 
 using namespace cv;
 

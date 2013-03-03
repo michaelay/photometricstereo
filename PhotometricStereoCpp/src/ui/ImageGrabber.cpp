@@ -6,20 +6,33 @@
  */
 
 #include "ImageGrabber.h"
-#include "InputAdjuster.h"
 #include <iostream>
 #include <string>
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "boost/thread.hpp"
-#include "Display.h"
+//#include "Display.h"
+#include "GlutDisplay.h"
 
 using namespace std;
 
-ImageGrabber::ImageGrabber(bool hardcode /*=false*/, bool saveCopy /*=false*/) {
-	mHardcode = hardcode;
-	mSaveCopy = saveCopy;
+bool ImageGrabber::mHardcode = false; // default value for static var
 
+void
+ImageGrabber::setHardcode(bool hardcode) {
+	mHardcode = hardcode;
+}
+
+ImageGrabber*
+ImageGrabber::getInstance() {
+	static ImageGrabber* instance = NULL;
+	if (instance == NULL) {
+		instance = new ImageGrabber();
+	}
+	return instance;
+}
+
+ImageGrabber::ImageGrabber() {
 	if (!mHardcode) {
 		mCapture = new VideoCapture(WEBCAM_NUMBER);
 		if (!mCapture->isOpened()) {
@@ -36,11 +49,11 @@ ImageGrabber::ImageGrabber(bool hardcode /*=false*/, bool saveCopy /*=false*/) {
 	}
 
 	// init mDirectionMap
-	mDirectionMap.resize(LightingPanel::NUM_DIRECTION);
-	mDirectionMap.at(0) = LightingPanel::UP;
-	mDirectionMap.at(1) = LightingPanel::DOWN;
-	mDirectionMap.at(2) = LightingPanel::LEFT;
-	mDirectionMap.at(3) = LightingPanel::RIGHT;
+	mDirectionMap.resize(LightingPanelRenderer::NUM_DIRECTION);
+	mDirectionMap.at(0) = LightingPanelRenderer::UP;
+	mDirectionMap.at(1) = LightingPanelRenderer::DOWN;
+	mDirectionMap.at(2) = LightingPanelRenderer::LEFT;
+	mDirectionMap.at(3) = LightingPanelRenderer::RIGHT;
 
 	mOriginalImages.resize(NUM_IMAGES);
 
@@ -62,16 +75,6 @@ ImageGrabber::~ImageGrabber() {
  * Creates new matrix like CvtColor
  */
 void ImageGrabber::updateScreenAndCapture(bool adjustInput) {
-//	updateScreen();
-//
-//	boost::system_time captureTime = mLastUpdateScreen + boost::posix_time::millisec(CAPTURE_WAIT_MILLISECOND);
-//	boost::thread::sleep(captureTime);
-//
-//	captureImage();
-//	updateCurrentIdx();
-//	updateScreen();
-//	mLastUpdateScreen = boost::get_system_time();
-
 	// NEW
 	boost::system_time captureTime = mLastUpdateScreen + boost::posix_time::millisec(CAPTURE_WAIT_MILLISECOND);
 	boost::thread::sleep(captureTime);
@@ -115,9 +118,10 @@ void ImageGrabber::getAvgImage(Mat& avgImage) {
 // private methos
 void ImageGrabber::updateScreen() {
 //	mLightPanel.showDirection(mDirectionMap.at(mCurrentIdx));
-	Display* display = Display::getInstance();
-	display->updateLight((Display::LightingDirection)mDirectionMap.at(mCurrentIdx));
-	display->draw();
+	GlutDisplay* display = GlutDisplay::getInstance();
+	display->setLightDirection(mDirectionMap.at(mCurrentIdx));
+	cout << "current idx: " << mCurrentIdx << endl;
+//	display->draw();
 }
 
 void ImageGrabber::captureImage() {
@@ -150,9 +154,9 @@ void ImageGrabber::captureImage(bool adjustInput) {
 		mCapture->grab();
 		*mCapture >> newImage;
 
-		if (mSaveCopy) {
-			imwrite(getFileName(destIdx), newImage);
-		}
+//		if (mSaveCopy) {
+//			imwrite(getFileName(destIdx), newImage);
+//		}
 	}
 
 	if (destIdx == 0) {

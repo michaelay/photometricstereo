@@ -48,14 +48,8 @@ Display::Display() {
 	}
 
 	// init opengl
-//	glMatrixMode (GL_PROJECTION);
-//	glLoadIdentity();
-//	glOrtho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1);
-
 	glMatrixMode(GL_MODELVIEW);
-
 	glEnable( GL_SCISSOR_TEST );
-
 	glClearColor(0,0,0,0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -88,7 +82,7 @@ void Display::waitKey() {
 void Display::drawLight() {
 
 	glViewport(SCREEN_MARGIN_WIDTH, 0, SCREEN_HEIGHT, SCREEN_HEIGHT);
-	glScissor(SCREEN_MARGIN_WIDTH, 0, SCREEN_HEIGHT, SCREEN_HEIGHT);
+//	glScissor(SCREEN_MARGIN_WIDTH, 0, SCREEN_HEIGHT, SCREEN_HEIGHT);
 
 	glMatrixMode (GL_PROJECTION);
 	glPushMatrix();
@@ -157,7 +151,7 @@ void Display::drawLight() {
     glMatrixMode( GL_MODELVIEW );
 
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-	glScissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+//	glScissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
 void Display::drawModel() {
@@ -183,7 +177,7 @@ void Display::drawModel() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    mRenderer.display();
+    mRenderer.render();
 
 	glPopMatrix();
 
@@ -196,10 +190,7 @@ void Display::drawModel() {
 	glScissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 }
-//void Display::drawDebug1() {
-//	glPushMatrix();
-//	glPopMatrix();
-//}
+
 void Display::drawHeightMap() {
 	glPushMatrix();
 //	imageDrawer(image2);
@@ -209,17 +200,6 @@ void Display::drawHeightMap() {
 	glRasterPos2f(-1.0f, -1.0f);
 	glPopMatrix();
 }
-//void Display::drawDebug3() {
-//	glPushMatrix();
-//	glPopMatrix();
-//}
-
-//void Display::imageDrawer(Mat image) {
-//	glEnable(GL_DEPTH_TEST);
-//	glRasterPos2f(-1.0f , -0.4f);
-//	glDrawPixels(image.cols, image.rows, GL_LUMINANCE, GL_UNSIGNED_BYTE, image.data);
-//	glRasterPos2f(-1.0f, -1.0f);
-//}
 
 /**
  * Update lighting according to the direction specified
@@ -232,21 +212,16 @@ void Display::updateLight(Display::LightingDirection dir) {
  * Rendering is done through OpenGL over GLFW
  */
 void Display::updateModel(Mat heightMap, Mat textureMap) {
-	mRenderer.update(heightMap, textureMap);
+//	mRenderer.update(heightMap, textureMap);
+	mRenderer.setHeightMap(heightMap);
+	mRenderer.setTextureMap(textureMap);
 }
 
 /**
  * Display images in OpenCV Mat grayscale format CV_32FC1, range 0 to 1
  */
-//void Display::updateDebug1(Mat image) {
-//}
-//
 void Display::updateHeightMap(Mat image) {
 	flip(image, mHeightMap, 0);
 	mHeightMap *= 255.0;
 	mHeightMap.convertTo(mHeightMap, CV_8UC1);
 }
-//
-//void Display::updateDebug3(Mat image) {
-//}
-

@@ -18,10 +18,8 @@
 #include "PhotometricStereo.h"
 
 #include "ui/ImageGrabber.h"
-#include "ui/LightingPanel.h"
-#include "ui/ModelRenderer.h"
-#include "ui/InputAdjuster.h"
 #include "ui/Display.h"
+#include "ui/GlutDisplay.h"
 
 #include "sample/ImageGenerator.h"
 
@@ -29,102 +27,66 @@ using namespace std;
 using namespace cv;
 
 void doVideo(bool hardcode, bool saveCopy);
-void doStatic(bool hardcode, bool saveCopy);
-void calibrate();
+void doStatic(bool hardcode);
+void doGenerate(int argc, char** argv, string prefix);
 
-int main(int argc, char *argv[]) {
 
+void callback() {
 	try {
-//		calibrate();
-//		doVideo(true, false);
-
-		doStatic(true, false); // hardcode, savecopy
-
-//		SampleImageGenerator* generator = new SampleImageGenerator();
-//		generator->generateImage(argc, argv, "ss_");
-//		delete generator;
+		//		doVideo(true, false);
+		doStatic(true); // hardcode
+		//		doGenerate(argc, argv, "ss_");
 	} catch (Exception& ex) {
 		cerr << "Exception caught: " << ex.what() << endl;
 	}
+}
 
-	destroyAllWindows();
+Mat heightMap = Mat::zeros(CAPTURE_HEIGHT, CAPTURE_WIDTH, CV_32FC1);
+Mat textureMap = Mat::zeros(CAPTURE_HEIGHT, CAPTURE_WIDTH, CV_32FC1);
 
+int main(int argc, char *argv[]) {
+	ImageGrabber::setHardcode(true);
+
+	// pass command line parameters to GlutDisplay
+	GlutDisplay::setArg(argc, argv);
+	GlutDisplay* display = GlutDisplay::getInstance();
+
+	display->setHeightMap(heightMap);
+	display->setTextureMap(textureMap);
+	display->setDisplayMode(GlutDisplay::MANUAL);
+	display->setCallback(callback);
+
+	display->start();
 	return 0;
 }
 
-
-void calibrate() {
-	ImageGrabber grabber(false, false);
-	PhotometricStereo ps;
-
-	cout << "Static: waiting to start grab" << endl;
-
-	for (int i=0; i<NUM_IMAGES*2; i++) {
-		grabber.updateScreenAndCapture(false);
-	}
-
-	cout << "Static: Done grab" << endl;
-
-	InputAdjuster adjuster;
-	Mat adjustment;
-	adjuster.createAdjustment(grabber.getImages(), adjustment);
-	adjuster.getAdjustment(adjustment);
-	imshow("tt0", adjustment.col(0).clone().reshape(0, CAPTURE_HEIGHT)/10);
-	imshow("tt1", adjustment.col(1).clone().reshape(0, CAPTURE_HEIGHT)/10);
-	imshow("tt2", adjustment.col(2).clone().reshape(0, CAPTURE_HEIGHT)/10);
-	imshow("tt3", adjustment.col(3).clone().reshape(0, CAPTURE_HEIGHT)/10);
-
-
-	cout << "Static: Done processing" << endl;
-	while (true) {
-		usleep(100*1000);
-		if (!glfwGetWindowParam( GLFW_OPENED )) {
-			return;
-		}
-	}
+void doGenerate(int argc, char** argv, string prefix) {
+	SampleImageGenerator* generator = new SampleImageGenerator();
+	generator->generateImage(argc, argv, prefix);
+	delete generator;
 }
 
-void doStatic(bool hardcode, bool saveCopy) {
-	ImageGrabber grabber(hardcode, saveCopy);
+void doStatic(bool hardcode) {
+	ImageGrabber* grabber = ImageGrabber::getInstance();
 	PhotometricStereo ps;
-
-	Display* display = Display::getInstance();
-
 	cout << "Static: waiting to start grab" << endl;
-
-	for (int i=0; i<NUM_IMAGES*2; i++) {
-		grabber.updateScreenAndCapture();
-	}
+	grabber->updateScreenAndCapture();
 	cout << "Static: Done grab" << endl;
-
-	Mat heightMap = Mat::zeros(CAPTURE_HEIGHT, CAPTURE_WIDTH, CV_32FC1);
-	Mat textureMap = Mat::zeros(CAPTURE_HEIGHT, CAPTURE_WIDTH, CV_32FC1);
-
-	ps.getHeightMap(grabber.getImages(), heightMap);
-	grabber.getAvgImage(textureMap); // TODO: get albedo map from ps object instead
-
+	ps.getHeightMap(grabber->getImages(), heightMap);
+//	grabber.getAvgImage(textureMap); // TODO: get albedo map from ps object instead
 	cout << "Static: Done processing" << endl;
-
-
-	while (true) {
-		// TODO: set heightmap and texturemap only once
-		display->updateModel(heightMap.clone(), textureMap.clone());
-		display->draw();
-		usleep(100*1000);
-		if (!glfwGetWindowParam( GLFW_OPENED )) {
-			return;
-		}
-	}
+//	usleep(100*1000);
 }
 
 void doVideo(bool hardcode, bool saveCopy) {
-	ImageGrabber grabber(hardcode, saveCopy);
+	ImageGrabber* grabber = ImageGrabber::getInstance();
 	PhotometricStereo ps;
 
 	Display* display = Display::getInstance();
 
+
 	for (int i=0; i<NUM_IMAGES*2; i++) { // get NUM_IMAGES real quick to fill up the grabber
-		grabber.updateScreenAndCapture();
+		grabber->updateScreenAndCapture();
 	}
 
 	Mat heightMap = Mat::zeros(CAPTURE_HEIGHT, CAPTURE_WIDTH, CV_32FC1);
@@ -134,19 +96,19 @@ void doVideo(bool hardcode, bool saveCopy) {
 		cout << "======= start ========" << endl;
 		boost::system_time last = boost::get_system_time();
 #endif
-		grabber.updateScreenAndCapture();
+		grabber->updateScreenAndCapture();
 #ifdef TIME_CHECK
 		cout << "grabber: " << boost::get_system_time() - last << endl;
 
 		last = boost::get_system_time();
 #endif
-		ps.getHeightMap(grabber.getImages(), heightMap);
+		ps.getHeightMap(grabber->getImages(), heightMap);
 #ifdef TIME_CHECK
 		cout << "height: " << boost::get_system_time() - last << endl;
 
 		last = boost::get_system_time();
 #endif
-		grabber.getAvgImage(textureMap);
+		grabber->getAvgImage(textureMap);
 #ifdef TIME_CHECK
 		cout << "texture: " << boost::get_system_time() - last << endl;
 

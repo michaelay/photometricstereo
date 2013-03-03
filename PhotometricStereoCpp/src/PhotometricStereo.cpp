@@ -12,7 +12,7 @@
 #include <iostream>
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
-#include "ui/Display.h"
+//#include "ui/Display.h"
 #include "boost/thread.hpp"
 #include "boost/date_time/posix_time/posix_time.hpp"
 
@@ -189,9 +189,9 @@ void PhotometricStereo::getHeight(Mat normals, Mat roi, Mat heightMap) {
 //	for (int nx = 0; nx < 320; nx += 2) {
 //		cout << heightMap.at<float>(nx, 120) << endl;
 //	}
-	if (SHOW_HEIGHTMAP) {
-		showHeightMap(WINDOW_DEBUG, heightMap);
-	}
+//	if (SHOW_HEIGHTMAP) {
+//		showHeightMap(WINDOW_DEBUG, heightMap);
+//	}
 }
 
 void PhotometricStereo::showNormal(const string& windowName, Mat normals) {
@@ -215,30 +215,30 @@ void PhotometricStereo::showNormal(const string& windowName, Mat normals) {
 #endif
 }
 
-void PhotometricStereo::showHeightMap(const string& windowName, Mat heightMat) {
-	double minVal;
-	double maxVal;
-	minMaxLoc(heightMat, &minVal, &maxVal);
-	Mat clone = heightMat.clone();
-	clone -= minVal;
-	clone /= (maxVal - minVal); // range from 0 to 1
-//	clone *= 255;
-//	imshow(windowName, clone);
-
-	Display* display = Display::getInstance();
-	display->updateHeightMap(clone);
-//	display->drawHeightMap();
-//	Display::getInstance()->updateHeightMap(clone);
-//	Display::getInstance()->draw();
-
-//	if (RECORD_VIDEO) {
-//		mVideoWriter.write(clone);
-//	}
-
-#ifdef INTERACTIVE
-	waitKey();
-#endif
-}
+//void PhotometricStereo::showHeightMap(const string& windowName, Mat heightMat) {
+//	double minVal;
+//	double maxVal;
+//	minMaxLoc(heightMat, &minVal, &maxVal);
+//	Mat clone = heightMat.clone();
+//	clone -= minVal;
+//	clone /= (maxVal - minVal); // range from 0 to 1
+////	clone *= 255;
+////	imshow(windowName, clone);
+//
+//	Display* display = Display::getInstance();
+//	display->updateHeightMap(clone);
+////	display->drawHeightMap();
+////	Display::getInstance()->updateHeightMap(clone);
+////	Display::getInstance()->draw();
+//
+////	if (RECORD_VIDEO) {
+////		mVideoWriter.write(clone);
+////	}
+//
+//#ifdef INTERACTIVE
+//	waitKey();
+//#endif
+//}
 
 void PhotometricStereo::showROI(const string& windowName, Mat roi) {
 	Mat clone = roi.clone();
