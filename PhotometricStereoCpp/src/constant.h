@@ -24,7 +24,7 @@ const double ROI_THRESHOLD = 0;
 
 #define MAX_NUM_ITERATION 5000
 #define GAUSS_SEIDEL_THRESHOLD 0 // 0.001 // 0.0001
-#define MIN_ROW_TO_SCALE 2 // 8
+#define MIN_ROW_TO_SCALE 10
 
 #define RECORD_VIDEO false
 
@@ -38,7 +38,7 @@ const float MODEL_ANGLE_STEP = 3.0f;
 #define WEBCAM_NUMBER 0
 
 //const int HEIGHT_MAP_SCALE = 3000; //6000;
-const int HEIGHT_MAP_SCALE = 1; //6000;
+//const int HEIGHT_MAP_SCALE = 1; //6000;
 #ifdef WIN
 const int WEBCAM_NUMBER_FLUSH = 1;
 const bool FLIP_HEIGHT = false;

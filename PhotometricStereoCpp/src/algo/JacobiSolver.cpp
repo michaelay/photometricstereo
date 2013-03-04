@@ -68,40 +68,9 @@ void JacobiSolver::normalToHeight(Mat normalVectors, int imageNumRow, Mat& heigh
 #ifdef TIME_CHECK
 	cout << "Jacobi diff to height: " << boost::get_system_time() - last << endl;
 #endif
-//	heightMat /= 20.0;  // scale
 }
 
 // private
-
-void JacobiSolver::scaleDownDifferentialAndHeight(
-		Mat xDifferential,
-		Mat yDifferential,
-		Mat heightMat,
-		Mat& xDiffSmall,
-		Mat& yDiffSmall,
-		Mat& heightMatSmall) {
-
-//	Size smallSize;
-//	smallSize.height = heightMat.rows / 2;
-//	smallSize.width = heightMat.cols / 2;
-
-//	resize(xDifferential, xDiffSmall, smallSize);
-//	resize(yDifferential, yDiffSmall, smallSize);
-//	resize(heightMat, heightMatSmall, smallSize);
-
-	pyrDown(xDifferential, xDiffSmall);
-	pyrDown(yDifferential, yDiffSmall);
-	yDiffSmall *= 2;
-	xDiffSmall *= 2;
-	pyrDown(heightMat, heightMatSmall);
-
-//	Mat coarseXTail = xDiffSmall.colRange(1, smallSize.width);
-//	coarseXTail += xDiffSmall.colRange(0, smallSize.width-1).clone();
-//
-//	Mat coarseYTail = yDiffSmall.rowRange(1, smallSize.height);
-//	coarseYTail += yDiffSmall.rowRange(0, smallSize.height-1).clone();
-}
-
 void JacobiSolver::computeDifferentialAdjust(Mat xDifferential, Mat yDifferential, Mat& adjust) {
 	int numRow = xDifferential.rows;
 	int numCol = xDifferential.cols;
@@ -119,25 +88,6 @@ void JacobiSolver::computeDifferentialAdjust(Mat xDifferential, Mat yDifferentia
 	adjust += yDifferential;
 	adjust /= 4.0;
 }
-
-//void JacobiSolver::computeDifferentialAdjust(gpu::GpuMat xDifferential, gpu::GpuMat yDifferential, gpu::GpuMat& adjust) {
-//	int numRow = xDifferential.rows;
-//	int numCol = xDifferential.cols;
-////	adjust = Mat::zeros(numRow, numCol, CV_32FC1);
-//
-//	gpu::GpuMat yTail = yDifferential.rowRange(1, numRow);
-//	gpu::GpuMat yHead = yDifferential.rowRange(0, numRow-1);
-//	yTail -= yHead.clone();
-//
-//	gpu::GpuMat xTail = xDifferential.colRange(1, numCol);
-//	gpu::GpuMat xHead = xDifferential.colRange(0, numCol-1);
-//	xTail -= xHead.clone();
-//
-//	adjust += xDifferential;
-//	adjust += yDifferential;
-//	adjust /= 4.0;
-//}
-
 
 void JacobiSolver::computeNeighborAdjust(Mat heightMat, Mat& adjust) {
 	int numRow = heightMat.rows;
@@ -167,41 +117,6 @@ void JacobiSolver::computeNeighborAdjust(Mat heightMat, Mat& adjust) {
 	adjust /= 4.0;
 }
 
-//void JacobiSolver::computeNeighborAdjust(gpu::GpuMat heightMat, gpu::GpuMat& adjust) {
-//	int numRow = heightMat.rows;
-//	int numCol = heightMat.cols;
-//
-//	adjust.setTo(0.0);
-////	adjust = Mat::zeros(numRow, numCol, CV_32FC1);
-//
-//	gpu::GpuMat heightSubMat;
-//	gpu::GpuMat adjustSubMat;
-//
-//	heightSubMat = heightMat.rowRange(1, numRow);
-//	adjustSubMat = adjust.rowRange(0, numRow-1);
-////	adjustSubMat += heightSubMat;
-//	gpu::add(adjustSubMat, heightSubMat, adjustSubMat);
-//
-//	heightSubMat = heightMat.rowRange(0, numRow-1);
-//	adjustSubMat = adjust.rowRange(1, numRow);
-//	//	adjustSubMat += heightSubMat;
-//	gpu::add(adjustSubMat, heightSubMat, adjustSubMat);
-//
-//	heightSubMat = heightMat.colRange(1, numCol);
-//	adjustSubMat = adjust.colRange(0, numCol-1);
-////	adjustSubMat += heightSubMat;
-//	gpu::add(adjustSubMat, heightSubMat, adjustSubMat);
-//
-//	heightSubMat = heightMat.colRange(0, numCol-1);
-//	adjustSubMat = adjust.colRange(1, numCol);
-////	adjustSubMat += heightSubMat;
-//	gpu::add(adjustSubMat, heightSubMat, adjustSubMat);
-//
-////	adjust /= 4.0;
-//	gpu::divide(adjust, 4.0, adjust);
-//}
-
-
 void JacobiSolver::normalDifferentialToHeight(Mat xDifferential, Mat yDifferential, Mat& heightMat, unsigned int level) {
 
 	int numRow = heightMat.rows;
@@ -211,26 +126,29 @@ void JacobiSolver::normalDifferentialToHeight(Mat xDifferential, Mat yDifferenti
 		boost::system_time last = boost::get_system_time();
 #endif
 
-	if (numRow > MIN_ROW_TO_SCALE && numCol > MIN_ROW_TO_SCALE) { // perform on scaled down version
+	// Pyramid up and down for faster processing
+	// http://docs.opencv.org/doc/tutorials/imgproc/pyramids/pyramids.html
+	if (heightMat.rows > MIN_ROW_TO_SCALE && heightMat.cols > MIN_ROW_TO_SCALE) { // perform on scaled down version
 		Mat coarseX;
 		Mat coarseY;
 		Mat coarseHeight;
-		scaleDownDifferentialAndHeight(xDifferential, yDifferential, heightMat, coarseX, coarseY, coarseHeight);
+
+		pyrDown(heightMat, coarseHeight, Size(heightMat.cols/2, heightMat.rows/2));
+		pyrDown(xDifferential, coarseX, Size(xDifferential.cols/2, xDifferential.rows/2));
+		pyrDown(yDifferential, coarseY, Size(yDifferential.cols/2, yDifferential.rows/2));
+		xDifferential *= 2;
+		yDifferential *= 2;
+
 		normalDifferentialToHeight(coarseX, coarseY, coarseHeight, ++level);
-//		pyrUp(coarseHeight, heightMat);
-//		resize(heightMat, heightMat, Size(numCol, numRow));
-		resize(coarseHeight, heightMat, Size(numCol, numRow));
+
+//		pyrUp(coarseHeight, heightMat, Size(coarseHeight.cols*2, coarseHeight.rows*2));
+		pyrUp(coarseHeight, heightMat, Size(numCol, numRow));
 	}
-
-//	numRow = heightMat.rows;
-//	numCol = heightMat.cols;
-
 
 #ifdef TIME_CHECK
 		cout << "js scaledown: " << boost::get_system_time() - last << endl;
 		last = boost::get_system_time();
 #endif
-
 
 	// run the actual gauss seidel algorithm
 	Mat pqAdjust;
@@ -240,14 +158,6 @@ void JacobiSolver::normalDifferentialToHeight(Mat xDifferential, Mat yDifferenti
 		cout << "js diff adjust: " << boost::get_system_time() - last << endl;
 		last = boost::get_system_time();
 #endif
-
-//#ifdef TIME_CHECK
-//		boost::system_time neighbor_start = boost::get_system_time();
-//		boost::system_time add_start = boost::get_system_time();
-//		boost::system_time neighbor_total = 0;
-//		boost::system_time add_total = 0;
-//#endif
-
 
 	int k=0;
 	for (k=0; k<MAX_NUM_ITERATION; k++) {
@@ -262,13 +172,7 @@ void JacobiSolver::normalDifferentialToHeight(Mat xDifferential, Mat yDifferenti
 //		cout << "js loop 2: " << boost::get_system_time() - last << endl;
 //		last = boost::get_system_time();
 //#endif
-
-
 		heightMat = neightborAdjust + pqAdjust;
-//#ifdef TIME_CHECK
-//		cout << "js loop 4: " << boost::get_system_time() - last << endl;
-//		last = boost::get_system_time();
-//#endif
 
 		// convergence check
 		Mat absDiff;

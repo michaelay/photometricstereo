@@ -165,11 +165,11 @@ void PhotometricStereo::getNormal(Mat images) {
 
 //	cout << "dump normals vertical" << endl;
 //	for (int nx = 0; nx < 320*240; nx += 320 * 2) {
-//		cout << normals.row(nx + 160) << endl;
+//		cout << mNormalMap.row(nx + 160) << endl;
 //	}
 //	cout << "dump normals horizontal" << endl;
 //	for (int ny = 320*240/2 - 120 -1; ny < 320*240/2 + 120; ny++) {
-//		cout << normals.row(ny + 120) << endl;
+//		cout << mNormalMap.row(ny + 120) << endl;
 //	}
 
 //	if (SHOW_NORMAL) {
@@ -180,6 +180,10 @@ void PhotometricStereo::getNormal(Mat images) {
 void
 PhotometricStereo::getHeight() {
 	solver.normalToHeight(mNormalMap, CAPTURE_HEIGHT, mHeightMap);
+	cout << "dump height vertical" << endl;
+	cout << mHeightMap.col(160) << endl;
+	cout << "dump height horizontal" << endl;
+	cout << mHeightMap.row(120) << endl;
 }
 
 void PhotometricStereo::showNormal(const string& windowName, Mat normals) {
