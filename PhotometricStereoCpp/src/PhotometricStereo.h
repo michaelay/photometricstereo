@@ -20,17 +20,21 @@ private:
 	float mExpectedLvalues[4][2];
 	float mExpectedLz;
 	JacobiSolver solver;
-//	VideoWriter mVideoWriter;
+
+	Mat mNormalMap;
+	Mat mHeightMap;
 public:
 	PhotometricStereo();
 	virtual ~PhotometricStereo();
 
-	void getHeightMap(Mat images, Mat heightMap);
+	void solve(Mat images);
+	Mat getNormalMap();
+	Mat getHeightMap();
 
 private:
 	void getROI(Mat images, Mat& roi);
-	Mat getNormal(Mat images, Mat roi);
-	void getHeight(Mat normals, Mat roi, Mat heightMap);
+	void getNormal(Mat images, Mat roi);
+	void getHeight(Mat roi);
 //	void getTextureMap(Mat images, Mat textureMap);
 
 

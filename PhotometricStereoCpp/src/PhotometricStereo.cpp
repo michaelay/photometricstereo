@@ -34,14 +34,26 @@ PhotometricStereo::PhotometricStereo() {
 	mExpectedLvalues[3][0] = -1.0;
 	mExpectedLvalues[3][1] = 0.0;
 	mExpectedLz = -1; // not used yet
-	mExpectedL= Mat(4, 2, CV_32FC1, mExpectedLvalues);
+	mExpectedL = Mat(4, 2, CV_32FC1, mExpectedLvalues);
+
+	mHeightMap = Mat::zeros(CAPTURE_HEIGHT, CAPTURE_WIDTH, CV_32FC1);
 }
 
 PhotometricStereo::~PhotometricStereo() {
-	// TODO Auto-generated destructor stub
 }
 
-void PhotometricStereo::getHeightMap(Mat images, Mat heightMap) {
+Mat
+PhotometricStereo::getNormalMap() {
+	return mNormalMap;
+}
+
+Mat
+PhotometricStereo::getHeightMap() {
+	return mHeightMap;
+}
+
+void
+PhotometricStereo::solve(Mat images) {
 
 	boost::system_time last = boost::get_system_time();
 
@@ -50,11 +62,11 @@ void PhotometricStereo::getHeightMap(Mat images, Mat heightMap) {
 	cout << "ps getroi: " << boost::get_system_time() - last << endl;
 
 	last = boost::get_system_time();
-	Mat normals = getNormal(images, roi);
+	getNormal(images, roi);
 	cout << "ps normals: " << boost::get_system_time() - last << endl;
 
 	last = boost::get_system_time();
-	getHeight(normals, roi, heightMap);
+	getHeight(roi);
 	cout << "ps height: " << boost::get_system_time() - last << endl;
 
 	//	mVideoWriter.open("height.avi",CV_FOURCC('X','V','I','D'), 10, cv::Size(CAPTURE_WIDTH, CAPTURE_HEIGHT),1);
@@ -90,7 +102,7 @@ void PhotometricStereo::getROI(Mat images, Mat& roi) {
 //	return ret;
 }
 
-Mat PhotometricStereo::getNormal(Mat images, Mat roi) {
+void PhotometricStereo::getNormal(Mat images, Mat roi) {
 
 	Mat A = images.clone(); // input is Grabber::image, clone one for debug purpose
 	Mat At = A.t();
@@ -101,37 +113,23 @@ Mat PhotometricStereo::getNormal(Mat images, Mat roi) {
 	Mat rightSingular; // right singular
 	SVD::compute(ATA, eigenvalues, leftSingular, rightSingular);
 
-	cout << "S" << endl;
-	cout << leftSingular << endl;
-	cout << "L:" << endl;
-	cout << rightSingular << endl;
-	cout << "eigenvalues" << endl;
-	cout << eigenvalues << endl;
+//	cout << "S" << endl;
+//	cout << leftSingular << endl;
+//	cout << "L:" << endl;
+//	cout << rightSingular << endl;
+//	cout << "eigenvalues" << endl;
+//	cout << eigenvalues << endl;
 
 	// L = U * first three rows of T
 	Mat L = rightSingular.rowRange(0, 3);
-	cout << "L1:" << endl;
-	cout << L << endl;
+//	cout << "L1:" << endl;
+//	cout << L << endl;
 
 	// resolve linear ambiguity
 	Mat permutation = rightSingular.rowRange(1,3).clone();
 	normalize(permutation.row(0), permutation.row(0));
 	normalize(permutation.row(1), permutation.row(1));
-//	Mat Bnorm = rightSingular.rowRange(1, 3);
-//	normalize(Bnorm.row(0), Bnorm.row(0));
-//	normalize(Bnorm.row(1), Bnorm.row(1));
-//	cout << "L2:" << endl;
-//	cout << L << endl;
-
-//	Mat permutation = Bnorm * mExpectedL;
 	permutation = permutation * mExpectedL;
-//	cout << "permutation: " << endl;
-//	cout << permutation << endl;
-//	permutation.at<float>(0,0) = round(permutation.at<float>(0,0));
-//	permutation.at<float>(0,1) = round(permutation.at<float>(0,1));
-//	permutation.at<float>(1,0) = round(permutation.at<float>(1,0));
-//	permutation.at<float>(1,1) = round(permutation.at<float>(1,1));
-//	cout << permutation << endl;
 
 	Mat permutationL = Mat::zeros(3,3,CV_32FC1);
 	permutationL.at<float>(0,0) = 1.0;
@@ -146,52 +144,40 @@ Mat PhotometricStereo::getNormal(Mat images, Mat roi) {
 	cout << "permutated L:" << endl;
 	cout << L << endl;
 
-	Mat normals;
-	normals = L * A.t();
-	normals = normals.t();
+//	Mat normals;
+	mNormalMap = (L * A.t()).t();
+//	mNormalMap = mNormalMap.t();
 
 	// strip by roi
 	Mat flipRoi;
 	bitwise_not(roi, flipRoi);
 	for (int i=0; i<3; i++) {
-		normals.col(i).setTo(0, flipRoi);
+		mNormalMap.col(i).setTo(0, flipRoi);
 	}
 
 	// normalize
 	Mat row;
-	for (int j=0; j < normals.size.p[0]; j++) {
-		normalize(normals.row(j), normals.row(j));
+	for (int j=0; j < mNormalMap.size.p[0]; j++) {
+		normalize(mNormalMap.row(j), mNormalMap.row(j));
 	}
 
-	cout << "dump normals vertical" << endl;
-	for (int nx = 0; nx < 320*240; nx += 320 * 2) {
-		cout << normals.row(nx + 160) << endl;
-	}
-	cout << "dump normals horizontal" << endl;
-	for (int ny = 320*240/2 - 120 -1; ny < 320*240/2 + 120; ny++) {
-		cout << normals.row(ny + 120) << endl;
-	}
+//	cout << "dump normals vertical" << endl;
+//	for (int nx = 0; nx < 320*240; nx += 320 * 2) {
+//		cout << normals.row(nx + 160) << endl;
+//	}
+//	cout << "dump normals horizontal" << endl;
+//	for (int ny = 320*240/2 - 120 -1; ny < 320*240/2 + 120; ny++) {
+//		cout << normals.row(ny + 120) << endl;
+//	}
 
-
-	if (SHOW_NORMAL) {
-		showNormal(WINDOW_DEBUG, normals);
-	}
-
-	return normals;
+//	if (SHOW_NORMAL) {
+//		showNormal(WINDOW_DEBUG, normals);
+//	}
 }
 
-void PhotometricStereo::getHeight(Mat normals, Mat roi, Mat heightMap) {
-//	GaussSeidelSolver solver;
-////	solver.normalToHeightGpu(normals, CAPTURE_HEIGHT, heightMap);
-//	solver.normalToHeight(normals, CAPTURE_HEIGHT, heightMap);
-
-	solver.normalToHeight(normals, CAPTURE_HEIGHT, heightMap);
-//	for (int nx = 0; nx < 320; nx += 2) {
-//		cout << heightMap.at<float>(nx, 120) << endl;
-//	}
-//	if (SHOW_HEIGHTMAP) {
-//		showHeightMap(WINDOW_DEBUG, heightMap);
-//	}
+void
+PhotometricStereo::getHeight(Mat roi) {
+	solver.normalToHeight(mNormalMap, CAPTURE_HEIGHT, mHeightMap);
 }
 
 void PhotometricStereo::showNormal(const string& windowName, Mat normals) {
