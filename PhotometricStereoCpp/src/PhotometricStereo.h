@@ -23,6 +23,7 @@ private:
 
 	Mat mNormalMap;
 	Mat mHeightMap;
+
 public:
 	PhotometricStereo();
 	virtual ~PhotometricStereo();
@@ -32,13 +33,13 @@ public:
 	Mat getHeightMap();
 
 private:
-	void getROI(Mat images, Mat& roi);
-	void getNormal(Mat images, Mat roi);
-	void getHeight(Mat roi);
+//	void getROI(Mat images, Mat& roi);
+	void getNormal(Mat images);
+	void getHeight();
 //	void getTextureMap(Mat images, Mat textureMap);
 
 
-	void showROI(const string& windowName, Mat roi);
+//	void showROI(const string& windowName);
 	void showNormal(const string& windowName, Mat normals);
 	void showHeightMap(const string& windowName, Mat heightMat);
 

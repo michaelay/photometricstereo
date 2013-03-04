@@ -57,16 +57,18 @@ PhotometricStereo::solve(Mat images) {
 
 	boost::system_time last = boost::get_system_time();
 
-	Mat roi;
-	getROI(images, roi);
-	cout << "ps getroi: " << boost::get_system_time() - last << endl;
+//	Mat roi;
+//	getROI(images, roi);
+//	cout << "ps getroi: " << boost::get_system_time() - last << endl;
+	// threshold to zero, see http://docs.opencv.org/doc/tutorials/imgproc/threshold/threshold.html
+	threshold(images, images, ROI_THRESHOLD, 0.0 ,3);
 
 	last = boost::get_system_time();
-	getNormal(images, roi);
+	getNormal(images);
 	cout << "ps normals: " << boost::get_system_time() - last << endl;
 
 	last = boost::get_system_time();
-	getHeight(roi);
+	getHeight();
 	cout << "ps height: " << boost::get_system_time() - last << endl;
 
 	//	mVideoWriter.open("height.avi",CV_FOURCC('X','V','I','D'), 10, cv::Size(CAPTURE_WIDTH, CAPTURE_HEIGHT),1);
@@ -84,25 +86,25 @@ PhotometricStereo::solve(Mat images) {
 //}
 
 // private
-void PhotometricStereo::getROI(Mat images, Mat& roi) {
-//	Mat roi = Mat::zeros(CAPTURE_HEIGHT * CAPTURE_WIDTH, 1, CV_8UC1);
-	Mat columnSum= Mat::zeros(CAPTURE_HEIGHT * CAPTURE_WIDTH, 1, CV_32FC1);
+//void PhotometricStereo::getROI(Mat images, Mat& roi) {
+////	Mat roi = Mat::zeros(CAPTURE_HEIGHT * CAPTURE_WIDTH, 1, CV_8UC1);
+//	Mat columnSum= Mat::zeros(CAPTURE_HEIGHT * CAPTURE_WIDTH, 1, CV_32FC1);
+//
+//	int numImages = images.cols;
+//	for (int i=0; i<numImages; i++) {
+//		columnSum += images.col(i);
+//	}
+//	columnSum /= numImages;
+//
+////	Mat ret;
+//	compare(columnSum, ROI_THRESHOLD, roi, CMP_GE);
+//	if (SHOW_ROI) {
+//		showROI(WINDOW_DEBUG, roi);
+//	}
+////	return ret;
+//}
 
-	int numImages = images.cols;
-	for (int i=0; i<numImages; i++) {
-		columnSum += images.col(i);
-	}
-	columnSum /= numImages;
-
-//	Mat ret;
-	compare(columnSum, ROI_THRESHOLD, roi, CMP_GE);
-	if (SHOW_ROI) {
-		showROI(WINDOW_DEBUG, roi);
-	}
-//	return ret;
-}
-
-void PhotometricStereo::getNormal(Mat images, Mat roi) {
+void PhotometricStereo::getNormal(Mat images) {
 
 	Mat A = images.clone(); // input is Grabber::image, clone one for debug purpose
 	Mat At = A.t();
@@ -148,12 +150,12 @@ void PhotometricStereo::getNormal(Mat images, Mat roi) {
 	mNormalMap = (L * A.t()).t();
 //	mNormalMap = mNormalMap.t();
 
-	// strip by roi
-	Mat flipRoi;
-	bitwise_not(roi, flipRoi);
-	for (int i=0; i<3; i++) {
-		mNormalMap.col(i).setTo(0, flipRoi);
-	}
+//	// strip by roi
+//	Mat flipRoi;
+//	bitwise_not(roi, flipRoi);
+//	for (int i=0; i<3; i++) {
+//		mNormalMap.col(i).setTo(0, flipRoi);
+//	}
 
 	// normalize
 	Mat row;
@@ -176,7 +178,7 @@ void PhotometricStereo::getNormal(Mat images, Mat roi) {
 }
 
 void
-PhotometricStereo::getHeight(Mat roi) {
+PhotometricStereo::getHeight() {
 	solver.normalToHeight(mNormalMap, CAPTURE_HEIGHT, mHeightMap);
 }
 
@@ -226,11 +228,11 @@ void PhotometricStereo::showNormal(const string& windowName, Mat normals) {
 //#endif
 //}
 
-void PhotometricStereo::showROI(const string& windowName, Mat roi) {
-	Mat clone = roi.clone();
-	clone *= 255;
-	imshow(WINDOW_DEBUG, clone.reshape(0, CAPTURE_HEIGHT));
-#ifdef INTERACTIVE
-	waitKey();
-#endif
-}
+//void PhotometricStereo::showROI(const string& windowName, Mat roi) {
+//	Mat clone = roi.clone();
+//	clone *= 255;
+//	imshow(WINDOW_DEBUG, clone.reshape(0, CAPTURE_HEIGHT));
+//#ifdef INTERACTIVE
+//	waitKey();
+//#endif
+//}
