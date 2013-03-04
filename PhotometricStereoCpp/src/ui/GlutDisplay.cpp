@@ -165,7 +165,28 @@ GlutDisplay::handleDisplay() {
 
 void
 GlutDisplay::handleKeyboard(unsigned char key, int x, int y) {
-
+    switch (key) {
+    	case 'J':
+        case 'j':
+//            printf("left arrow pressed\n");
+            mModelRenderer->decrementAngle(true, false);
+            break;
+        case 'I':
+        case 'i':
+//            printf("up arrow pressed\n");
+            mModelRenderer->incrementAngle(false, true);
+            break;
+        case 'L':
+        case 'l':
+//            printf("right arrow pressed\n");
+            mModelRenderer->incrementAngle(true, false);
+            break;
+        case 'K':
+        case 'k':
+//            printf("down arrow pressed\n");
+            mModelRenderer->decrementAngle(false, true);
+            break;
+    }
 }
 
 void
@@ -190,13 +211,17 @@ GlutDisplay::handleIdle() {
 	glScissor(0, 0, SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT);
 	mModelRenderer->render();
 
-	glViewport(0, SCREEN_MARGIN_HEIGHT, SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT);
-	glScissor(0, SCREEN_MARGIN_HEIGHT, SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT);
-	mNormalRenderer->render();
+	if (SHOW_NORMAL) {
+		glViewport(0, SCREEN_MARGIN_HEIGHT, SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT);
+		glScissor(0, SCREEN_MARGIN_HEIGHT, SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT);
+		mNormalRenderer->render();
+	}
 
-	glViewport(0, 2*SCREEN_MARGIN_HEIGHT, SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT);
-	glScissor(0, 2*SCREEN_MARGIN_HEIGHT, SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT);
-	mHeightMapRenderer->render();
+	if (SHOW_HEIGHTMAP) {
+		glViewport(0, 2*SCREEN_MARGIN_HEIGHT, SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT);
+		glScissor(0, 2*SCREEN_MARGIN_HEIGHT, SCREEN_MARGIN_WIDTH, SCREEN_MARGIN_HEIGHT);
+		mHeightMapRenderer->render();
+	}
 
 //	glViewport(SCREEN_MARGIN_WIDTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 //	glScissor(SCREEN_MARGIN_WIDTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT);

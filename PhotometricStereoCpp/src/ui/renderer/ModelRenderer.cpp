@@ -19,16 +19,8 @@
 #include <GL/glut.h>
 #endif
 
-
 using namespace std;
 using namespace cv;
-
-// for mac
-//#include <GLUT/glut.h>
-// for windows freeglut
-//#include <glut.h>
-//#include <glext.h>
-
 
 #define FOCAL_LENGTH 600
 #define CUBE_SIZE 10
@@ -74,7 +66,8 @@ void ModelRenderer::render() {
 //		float factor = 100.0f / mHeightMap.cols;
 //		float factor = 1.0f / mHeightMap.cols;
 //		glScalef(factor, factor, factor);
-		glRotatef(mAngle, 0.0f, 1.0f, 0.0f);
+		glRotatef(mXAngle, 1.0f, 0.0f, 0.0f);
+		glRotatef(mYAngle, 0.0f, 1.0f, 0.0f);
 
 		int numRow = mHeightMap.rows;
 		int numCol = mHeightMap.cols;
@@ -125,18 +118,32 @@ void ModelRenderer::render() {
 	glPopMatrix();
 
 }
-//void ModelRenderer::idle() {
-//	//display();
-//}
 
-//void ModelRenderer::registerWindow() {
-////	cv::createOpenGLCallback(WINDOW_OUTPUT, onOpenGL, NULL);
-//}
+void
+ModelRenderer::incrementAngle(bool x, bool y) {
+	if (x) {
+		updateAngle(mXAngle, true);
+	}
+	if (y) {
+		updateAngle(mYAngle, true);
+	}
+//	std::cout << "angles: " << mXAngle << " | " << mYAngle << endl;
+}
 
+void
+ModelRenderer::decrementAngle(bool x, bool y) {
+	if (x) {
+		updateAngle(mXAngle, false);
+	}
+	if (y) {
+		updateAngle(mYAngle, false);
+	}
+//	std::cout << "angles: " << mXAngle << " | " << mYAngle << endl;
+}
 
 ModelRenderer::ModelRenderer() {
-	mAngle = MODEL_ANGLE_MIN;
-	mSign = 1;
+	mXAngle = ANGLE_DEFAULT;
+	mYAngle = ANGLE_DEFAULT;
 }
 
 ModelRenderer::~ModelRenderer() {
@@ -153,28 +160,20 @@ ModelRenderer::setTextureMap(cv::Mat textureMap) {
 	mTextureMap = textureMap;
 }
 
-//void ModelRenderer::update(Mat heightMap , Mat textureMap) {
-//	if (FLIP_HEIGHT) {
-//		mHeightMap = heightMap * -1 * HEIGHT_MAP_SCALE;
-//	} else {
-//		mHeightMap = heightMap * HEIGHT_MAP_SCALE;
-//	}
-//
-//	mTextureMap = textureMap;
-//	flip(mTextureMap, mTextureMap, 0);
-//	mTextureMap *= 2;
-//
-//	if (MODEL_ROTATE) {
-//		// update angle
-//		mAngle += MODEL_ANGLE_STEP * mSign;
-////		cout << "angle" << mAngle << endl;
-//		if (mAngle >= MODEL_ANGLE_MAX) {
-////			cout << "plus" << endl;
-//			mSign = -1.0f;
-//		} else if (mAngle <= MODEL_ANGLE_MIN) {
-////			cout << "neg" << endl;
-//			mSign = 1.0f;
-//		}
-//	}
-//}
-
+// private helper
+void
+ModelRenderer::updateAngle(float& angle, bool increment) {
+	if (increment) {
+		if (angle + ANGLE_STEP_SIZE > ANGLE_MAX) {
+			angle = ANGLE_MAX;
+		} else {
+			angle += ANGLE_STEP_SIZE;
+		}
+	} else {
+		if (angle - ANGLE_STEP_SIZE < ANGLE_MIN) {
+			angle = ANGLE_MIN;
+		} else {
+			angle -= ANGLE_STEP_SIZE;
+		}
+	}
+}

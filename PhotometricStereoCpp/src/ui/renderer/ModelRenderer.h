@@ -20,12 +20,22 @@
 
 class ModelRenderer : public Renderer {
 private:
+	static const float ANGLE_STEP_SIZE = 3.0f;
+	static const float ANGLE_MIN = -45.0f;
+	static const float ANGLE_MAX = 45.0f;
+	static const float ANGLE_DEFAULT = 0.0f;
+
 	static ModelRenderer* mInstance;
 	cv::Mat mHeightMap;
 	cv::Mat mTextureMap;
 
-	float mAngle;
-	float mSign;
+	float mXAngle;
+	float mYAngle;
+
+//	float mSign;
+
+	void updateAngle(float& angle, bool increment);
+
 public:
 	ModelRenderer();
 	virtual ~ModelRenderer();
@@ -33,11 +43,9 @@ public:
 	void setHeightMap(cv::Mat heightMap);
 	void setTextureMap(cv::Mat textureMap);
 
+	void incrementAngle(bool x, bool y);
+	void decrementAngle(bool x, bool y);
 
-//	void update(cv::Mat heightMap , cv::Mat textureMap);
-
-
-//	void initialize();
 	virtual void render();
 };
 
