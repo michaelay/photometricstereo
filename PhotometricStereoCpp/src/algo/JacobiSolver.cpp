@@ -102,10 +102,12 @@ JacobiSolver::normalToHeightIterative(Mat normals, int numRow, Mat height) {
 		// create pyramids if not already
 		cout << "Create pyramid" << endl;
 		mHeightPyramid.resize(numIteration);
+		mHeightPyramid2.resize(numIteration);
 		mNxPyramid.resize(numIteration);
 		mNyPyramid.resize(numIteration);
 
 		mHeightPyramid[0] = height;
+		mHeightPyramid2[0] = height.clone();
 	}
 	mNxPyramid[0] = nx;
 	mNyPyramid[0] = ny;
@@ -114,6 +116,7 @@ JacobiSolver::normalToHeightIterative(Mat normals, int numRow, Mat height) {
 	// fill the pyramid
 	for (unsigned int i = 1; i < numIteration; i++) {
 		pyrDown(mHeightPyramid[i-1], mHeightPyramid[i], Size(mHeightPyramid[i-1].cols/2, mHeightPyramid[i-1].rows/2)); // TODO: only need last level
+		mHeightPyramid2[i] = mHeightPyramid[i].clone(); // TODO: no need to clone, just init
 		pyrDown(mNxPyramid[i-1], mNxPyramid[i], Size(mNxPyramid[i-1].cols/2, mNxPyramid[i-1].rows/2));
 		pyrDown(mNyPyramid[i-1], mNyPyramid[i], Size(mNyPyramid[i-1].cols/2, mNyPyramid[i-1].rows/2));
 	}
@@ -125,116 +128,162 @@ JacobiSolver::normalToHeightIterative(Mat normals, int numRow, Mat height) {
 
 		numRow = mHeightPyramid[i].rows;
 		numCol = mHeightPyramid[i].cols;
+
 		// ignore the four edges
+		bool usePyramid2 = true; // use pyramid 2 as target ( update pyramid 2 )
 		int numLeft = MAX_NUM_ITERATION;
+		Mat srcHeight, targetHeight; // = mHeightPyramid[i]; //, targetHeight;
+//		Mat newValue;
+		double lastMaxAbsVal = 0;
+		double lastMinAbsVal = 0;
+
 		while (numLeft-- > 0) {
+
+			if (usePyramid2) {
+				srcHeight = mHeightPyramid[i];
+				targetHeight = mHeightPyramid2[i];
+			} else {
+				srcHeight = mHeightPyramid2[i];
+				targetHeight = mHeightPyramid[i];
+			}
+//			srcHeight = mHeightPyramid[i];
+//			targetHeight = mHeightPyramid[i];
+
 			// center piece
-			mHeightPyramid.at(i)(Range(1, numRow-1), Range(1, numCol-1))
+			targetHeight(Range(1, numRow-1), Range(1, numCol-1))
 				= (
-					mHeightPyramid[i](Range(2, numRow), Range(1, numCol-1)) // height_(y+1, x)
-					+ mHeightPyramid[i](Range(0, numRow-2), Range(1, numCol-1)) // height_(y-1, x)
-					+ mHeightPyramid[i](Range(1, numRow-1), Range(2, numCol)) // height_(y, x+1)
-					+ mHeightPyramid[i](Range(1, numRow-1), Range(0, numCol-2)) // height_(y, x-1)
+					srcHeight(Range(2, numRow), Range(1, numCol-1)) // height_(y+1, x)
+					+ srcHeight(Range(0, numRow-2), Range(1, numCol-1)) // height_(y-1, x)
+					+ srcHeight(Range(1, numRow-1), Range(2, numCol)) // height_(y, x+1)
+					+ srcHeight(Range(1, numRow-1), Range(0, numCol-2)) // height_(y, x-1)
 					+ (
 						mNxPyramid[i](Range(1, numRow-1), Range(1, numCol-1)) // nx_(y, x)
 						- mNxPyramid[i](Range(1, numRow-1), Range(0, numCol-2)) // nx_(y, x-1)
 						+ mNyPyramid[i](Range(1, numRow-1), Range(1, numCol-1)) // ny_(y, x)
 						- mNyPyramid[i](Range(0, numRow-2), Range(1, numCol-1)) // ny_(y-1, x)
 					) * differentialMultiple
-				) / 4.0;
-			// top edge
-			mHeightPyramid[i](Range(0, 1), Range(1, numCol-1))
-				= (
-					mHeightPyramid[i](Range(0, 1), Range(2, numCol)) // height_(y, x+1)
-					+ mHeightPyramid[i](Range(0, 1), Range(0, numCol-2)) // height_(y, x-1)
-					+ mHeightPyramid[i](Range(1, 2), Range(1, numCol-1)) // height_(y+1, x)
-					+ mHeightPyramid[i](Range(0, 1), Range(1, numCol-1)) // height_(y, x) <-- self
-					+ (
-						mNxPyramid[i](Range(0, 1), Range(1, numCol-1)) // nx_(y, x) // assume 0 Ny
-						- mNxPyramid[i](Range(0, 1), Range(0, numCol-2)) // nx_(y, x-1)
-					) * differentialMultiple
-				) / 4.0;
-			// bottom edge
-			mHeightPyramid[i](Range(numRow-1, numRow), Range(1, numCol-1))
-				= (
-					mHeightPyramid[i](Range(numRow-1, numRow), Range(2, numCol)) // height_(y, x+1)
-					+ mHeightPyramid[i](Range(numRow-1, numRow), Range(0, numCol-2)) // height_(y, x-1)
-					+ mHeightPyramid[i](Range(numRow-2, numRow-1), Range(1, numCol-1)) // height_(y-1, x)
-					+ mHeightPyramid[i](Range(numRow-1, numRow), Range(1, numCol-1)) // height_(y, x) <-- self
-					+ (
-						mNxPyramid[i](Range(numRow-1, numRow), Range(1, numCol-1)) // nx_(y, x)
-						- mNxPyramid[i](Range(numRow-1, numRow), Range(0, numCol-2)) // nx_(y, x-1)
-						+ mNyPyramid[i](Range(numRow-1, numRow), Range(1, numCol-1)) // ny_(y, x)
-						- mNyPyramid[i](Range(numRow-2, numRow-1), Range(1, numCol-1)) // ny_(y-1, x)
-					) * differentialMultiple
-				) / 4.0;
-			// left edge
-			mHeightPyramid[i](Range(1, numRow-1), Range(0, 1))
-				= (
-					mHeightPyramid[i](Range(0, numRow-2), Range(0, 1)) // height_(y-1, x)
-					+ mHeightPyramid[i](Range(2, numRow), Range(0, 1)) // height_(y+1, x)
-					+ mHeightPyramid[i](Range(1, numRow-1), Range(1, 2)) // height_(y, x+1)
-					+ mHeightPyramid[i](Range(1, numRow-1), Range(0, 1)) // height_(y, x)
-					+ (
-						mNyPyramid[i](Range(1, numRow-1), Range(0, 1)) // ny_(y, x) // assume 0 Nx
-						- mNyPyramid[i](Range(0, numRow-2), Range(0, 1)) // ny_(y-1, x)
-					) * differentialMultiple
-				) / 4.0;
-			// right edge
-			mHeightPyramid[i](Range(1, numRow-1), Range(numCol-1, numCol))
-				= (
-					mHeightPyramid[i](Range(0, numRow-2), Range(numCol-1, numCol)) // height_(y-1, x)
-					+ mHeightPyramid[i](Range(2, numRow), Range(numCol-1, numCol)) // height_(y+1, x)
-					+ mHeightPyramid[i](Range(1, numRow-1), Range(numCol-2, numCol-1)) // height_(y, x-1)
-					+ mHeightPyramid[i](Range(1, numRow-1), Range(numCol-1, numCol)) // height_(y, x)
-					+ (
-						mNxPyramid[i](Range(1, numRow-1), Range(numCol-1, numCol)) // nx_(y, x)
-						- mNxPyramid[i](Range(1, numRow-1), Range(numCol-2, numCol-1)) // nx_(y, x-1)
-						+ mNyPyramid[i](Range(1, numRow-1), Range(numCol-1, numCol)) // ny_(y, x)
-						- mNyPyramid[i](Range(0, numRow-2), Range(numCol-1, numCol)) // ny_(y-1, x)
-					) * differentialMultiple
-				) / 4.0;
-			// corners
-			// top left
-			mHeightPyramid[i].at<float>(0, 0)
-					= (
-					    mHeightPyramid[i].at<float>(0, 0) * 2 // y, x
-					    + mHeightPyramid[i].at<float>(0, 1) // y, x+1
-					    + mHeightPyramid[i].at<float>(1, 0) // y+1, x
-					) / 4.0;
-			// bottom left
-			mHeightPyramid[i].at<float>(numRow-1, 0)
-					= (
-					    mHeightPyramid[i].at<float>(numRow-1, 0) * 2 // y, x
-					    + mHeightPyramid[i].at<float>(numRow-1, 1) // y, x+1
-					    + mHeightPyramid[i].at<float>(numRow-2, 0) // y-1, x
-					    + (mNyPyramid[i].at<float>(numRow-1, 0) // ny_(y, x)
-					       - mNyPyramid[i].at<float>(numRow-2, 0) // ny_(y-1, x)
-					       ) * differentialMultiple
-					) / 4.0;
-			// top right
-			mHeightPyramid[i].at<float>(0, numCol-1)
-					= (
-					    mHeightPyramid[i].at<float>(0, numCol-1) * 2 // y, x
-					    + mHeightPyramid[i].at<float>(0, numCol-2) // y, x-1
-					    + mHeightPyramid[i].at<float>(1, numCol-1) // y+1, x
-					    + (mNxPyramid[i].at<float>(0, numCol-1) // nx_(y, x)
-					       - mNxPyramid[i].at<float>(0, numCol-2) // nx_(y, x-1)
-					       ) * differentialMultiple
-					) / 4.0;
-			// bottom right
-			mHeightPyramid[i].at<float>(numRow-1, numCol-1)
-					= (
-					    mHeightPyramid[i].at<float>(numRow-1, numCol-1) * 2 // y, x
-					    + mHeightPyramid[i].at<float>(numRow-1, numCol-2) // y, x-1
-					    + mHeightPyramid[i].at<float>(numRow-2, numCol-1) // y-1, x
-					    + (mNxPyramid[i].at<float>(numRow-1, numCol-1) // nx_(y, x)
-					       - mNxPyramid[i].at<float>(numRow-1, numCol-2) // nx_(y, x-1)
-						   + mNyPyramid[i].at<float>(numRow-1, numCol-1) // ny_(y, x)
-						   - mNyPyramid[i].at<float>(numRow-2, numCol-1) // ny_(y-1, x)
-					       ) * differentialMultiple
-					) / 4.0;
-					// TODO check convergence
+				) / 4.0 + 0.0;
+//			targetHeight(Range(1, numRow-1), Range(1, numCol-1)) = newValue;
+//			// top edge
+//			mHeightPyramid[i](Range(0, 1), Range(1, numCol-1))
+//				= (
+//					mHeightPyramid[i](Range(0, 1), Range(2, numCol)) // height_(y, x+1)
+//					+ mHeightPyramid[i](Range(0, 1), Range(0, numCol-2)) // height_(y, x-1)
+//					+ mHeightPyramid[i](Range(1, 2), Range(1, numCol-1)) // height_(y+1, x)
+//					+ mHeightPyramid[i](Range(0, 1), Range(1, numCol-1)) // height_(y, x) <-- self
+//					+ (
+//						mNxPyramid[i](Range(0, 1), Range(1, numCol-1)) // nx_(y, x) // assume 0 Ny
+//						- mNxPyramid[i](Range(0, 1), Range(0, numCol-2)) // nx_(y, x-1)
+//					) * differentialMultiple
+//				) / 4.0;
+//			// bottom edge
+//			mHeightPyramid[i](Range(numRow-1, numRow), Range(1, numCol-1))
+//				= (
+//					mHeightPyramid[i](Range(numRow-1, numRow), Range(2, numCol)) // height_(y, x+1)
+//					+ mHeightPyramid[i](Range(numRow-1, numRow), Range(0, numCol-2)) // height_(y, x-1)
+//					+ mHeightPyramid[i](Range(numRow-2, numRow-1), Range(1, numCol-1)) // height_(y-1, x)
+//					+ mHeightPyramid[i](Range(numRow-1, numRow), Range(1, numCol-1)) // height_(y, x) <-- self
+//					+ (
+//						mNxPyramid[i](Range(numRow-1, numRow), Range(1, numCol-1)) // nx_(y, x)
+//						- mNxPyramid[i](Range(numRow-1, numRow), Range(0, numCol-2)) // nx_(y, x-1)
+//						+ mNyPyramid[i](Range(numRow-1, numRow), Range(1, numCol-1)) // ny_(y, x)
+//						- mNyPyramid[i](Range(numRow-2, numRow-1), Range(1, numCol-1)) // ny_(y-1, x)
+//					) * differentialMultiple
+//				) / 4.0;
+//			// left edge
+//			mHeightPyramid[i](Range(1, numRow-1), Range(0, 1))
+//				= (
+//					mHeightPyramid[i](Range(0, numRow-2), Range(0, 1)) // height_(y-1, x)
+//					+ mHeightPyramid[i](Range(2, numRow), Range(0, 1)) // height_(y+1, x)
+//					+ mHeightPyramid[i](Range(1, numRow-1), Range(1, 2)) // height_(y, x+1)
+//					+ mHeightPyramid[i](Range(1, numRow-1), Range(0, 1)) // height_(y, x)
+//					+ (
+//						mNyPyramid[i](Range(1, numRow-1), Range(0, 1)) // ny_(y, x) // assume 0 Nx
+//						- mNyPyramid[i](Range(0, numRow-2), Range(0, 1)) // ny_(y-1, x)
+//					) * differentialMultiple
+//				) / 4.0;
+//			// right edge
+//			mHeightPyramid[i](Range(1, numRow-1), Range(numCol-1, numCol))
+//				= (
+//					mHeightPyramid[i](Range(0, numRow-2), Range(numCol-1, numCol)) // height_(y-1, x)
+//					+ mHeightPyramid[i](Range(2, numRow), Range(numCol-1, numCol)) // height_(y+1, x)
+//					+ mHeightPyramid[i](Range(1, numRow-1), Range(numCol-2, numCol-1)) // height_(y, x-1)
+//					+ mHeightPyramid[i](Range(1, numRow-1), Range(numCol-1, numCol)) // height_(y, x)
+//					+ (
+//						mNxPyramid[i](Range(1, numRow-1), Range(numCol-1, numCol)) // nx_(y, x)
+//						- mNxPyramid[i](Range(1, numRow-1), Range(numCol-2, numCol-1)) // nx_(y, x-1)
+//						+ mNyPyramid[i](Range(1, numRow-1), Range(numCol-1, numCol)) // ny_(y, x)
+//						- mNyPyramid[i](Range(0, numRow-2), Range(numCol-1, numCol)) // ny_(y-1, x)
+//					) * differentialMultiple
+//				) / 4.0;
+//			// corners
+//			// top left
+//			mHeightPyramid[i].at<float>(0, 0)
+//					= (
+//					    mHeightPyramid[i].at<float>(0, 0) * 2 // y, x
+//					    + mHeightPyramid[i].at<float>(0, 1) // y, x+1
+//					    + mHeightPyramid[i].at<float>(1, 0) // y+1, x
+//					) / 4.0;
+//			// bottom left
+//			mHeightPyramid[i].at<float>(numRow-1, 0)
+//					= (
+//					    mHeightPyramid[i].at<float>(numRow-1, 0) * 2 // y, x
+//					    + mHeightPyramid[i].at<float>(numRow-1, 1) // y, x+1
+//					    + mHeightPyramid[i].at<float>(numRow-2, 0) // y-1, x
+//					    + (mNyPyramid[i].at<float>(numRow-1, 0) // ny_(y, x)
+//					       - mNyPyramid[i].at<float>(numRow-2, 0) // ny_(y-1, x)
+//					       ) * differentialMultiple
+//					) / 4.0;
+//			// top right
+//			mHeightPyramid[i].at<float>(0, numCol-1)
+//					= (
+//					    mHeightPyramid[i].at<float>(0, numCol-1) * 2 // y, x
+//					    + mHeightPyramid[i].at<float>(0, numCol-2) // y, x-1
+//					    + mHeightPyramid[i].at<float>(1, numCol-1) // y+1, x
+//					    + (mNxPyramid[i].at<float>(0, numCol-1) // nx_(y, x)
+//					       - mNxPyramid[i].at<float>(0, numCol-2) // nx_(y, x-1)
+//					       ) * differentialMultiple
+//					) / 4.0;
+//			// bottom right
+//			mHeightPyramid[i].at<float>(numRow-1, numCol-1)
+//					= (
+//					    mHeightPyramid[i].at<float>(numRow-1, numCol-1) * 2 // y, x
+//					    + mHeightPyramid[i].at<float>(numRow-1, numCol-2) // y, x-1
+//					    + mHeightPyramid[i].at<float>(numRow-2, numCol-1) // y-1, x
+//					    + (mNxPyramid[i].at<float>(numRow-1, numCol-1) // nx_(y, x)
+//					       - mNxPyramid[i].at<float>(numRow-1, numCol-2) // nx_(y, x-1)
+//						   + mNyPyramid[i].at<float>(numRow-1, numCol-1) // ny_(y, x)
+//						   - mNyPyramid[i].at<float>(numRow-2, numCol-1) // ny_(y-1, x)
+//					       ) * differentialMultiple
+//					) / 4.0;
+
+			// check convergence
+			if (numLeft < MAX_NUM_ITERATION) { // do not exit on first 2 iteration
+				double minVal, maxVal, maxAbsVal, minAbsVal;
+				minMaxLoc(targetHeight - srcHeight, &minVal, &maxVal); //find minimum and maximum intensities
+//				minMaxLoc(newValue - srcHeight(Range(1, numRow-1), Range(1, numCol-1)), &minVal, &maxVal); //find minimum and maximum intensities
+//				cout << "max: " << abs(maxVal) << " min: " << abs(minVal) << endl;
+				maxAbsVal = max(abs(minVal), abs(maxVal));
+				minAbsVal = min(abs(minVal), abs(maxVal));
+//				if ((lastMaxAbsVal == maxAbsVal && lastMinAbsVal == minAbsVal)
+//						|| maxAbsVal <= GAUSS_SEIDEL_THRESHOLD) {
+				if ((abs(lastMaxAbsVal - maxAbsVal) <= GAUSS_SEIDEL_THRESHOLD * differentialMultiple
+						&& abs(lastMinAbsVal - minAbsVal) <= GAUSS_SEIDEL_THRESHOLD * differentialMultiple)
+						|| maxAbsVal <= GAUSS_SEIDEL_THRESHOLD * differentialMultiple) {
+//				if (checkVal <= GAUSS_SEIDEL_THRESHOLD) {
+					if (usePyramid2) { // if pyramid2 is most updated, copy the value to pyramid1
+//						targetHeight.copyTo(srcHeight);
+						srcHeight = targetHeight;
+					}
+					cout << "num iteration: " << MAX_NUM_ITERATION - numLeft << endl;
+					break;
+				}
+				lastMaxAbsVal = maxAbsVal;
+				lastMinAbsVal = minAbsVal;
+			}
+
+			usePyramid2 = !usePyramid2;
+//			srcHeight(Range(1, numRow-1), Range(1, numCol-1)) = newValue;
 		}
 
 		if (i > 0) {

@@ -27,6 +27,7 @@ public:
 private:
 
 	std::vector<cv::Mat> mHeightPyramid;
+	std::vector<cv::Mat> mHeightPyramid2; // for iteration exit condition comparison
 	std::vector<cv::Mat> mNxPyramid;
 	std::vector<cv::Mat> mNyPyramid;
 

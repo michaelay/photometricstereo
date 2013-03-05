@@ -22,8 +22,8 @@ const int SCREEN_MARGIN_HEIGHT = 200;
 #define CAPTURE_FPS 50
 const double ROI_THRESHOLD = 0;
 
-#define MAX_NUM_ITERATION 5000
-#define GAUSS_SEIDEL_THRESHOLD 0 // 0.001 // 0.0001
+#define MAX_NUM_ITERATION 500
+#define GAUSS_SEIDEL_THRESHOLD 0.0001 // 0.001 // 0.0001
 #define MIN_ROW_TO_SCALE 10
 
 #define RECORD_VIDEO false
@@ -65,9 +65,9 @@ const int CAPTURE_IDX_OFFSET = 0; // -1 to 2
 #define MODEL_WINDOW_Z_NEAR 1.0f
 #define MODEL_WINDOW_Z_FAR 500.0f
 
-//const std::string SAVE_FILENAME_PREFIX = "image_";
+const std::string SAVE_FILENAME_PREFIX = "image_";
 //const std::string SAVE_FILENAME_PREFIX = "ss_";
-const std::string SAVE_FILENAME_PREFIX = "screenshot_";
+//const std::string SAVE_FILENAME_PREFIX = "screenshot_";
 
 const std::string WINDOW_LIGHTING = "Lighting";
 const std::string WINDOW_OUTPUT = "Output";
