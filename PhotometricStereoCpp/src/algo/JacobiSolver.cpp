@@ -70,6 +70,182 @@ void JacobiSolver::normalToHeight(Mat normalVectors, int imageNumRow, Mat& heigh
 #endif
 }
 
+void
+JacobiSolver::normalToHeightIterative(Mat normals, int numRow, Mat height) {
+	boost::system_time last = boost::get_system_time();
+	// init
+	int numCol = normals.rows / numRow;
+
+	// compute nx and ny
+//	Mat nx = (normals.col(1).reshape(0, numRow) / normals.col(0).reshape(0, numRow));
+//	Mat ny = (normals.col(2).reshape(0, numRow) / normals.col(0).reshape(0, numRow));
+	Mat nx, ny;
+	divide(normals.col(1), normals.col(0), nx);
+	nx = nx.reshape(0, numRow);
+	divide(normals.col(2), normals.col(0), ny);
+	ny = ny.reshape(0, numRow);
+	cout << "differential: " << boost::get_system_time() - last << endl; last = boost::get_system_time();
+
+	// calculate number of iterations needed, take log2 of max(numRow, numCol)
+	unsigned int numIteration = 0;
+	int tmpIntForLog2 = max(numRow, numCol);
+	while (tmpIntForLog2 >>= 1) {
+		++numIteration;
+	}
+	// minimum 2^4 pixels
+	numIteration -= 3;
+
+	if (mHeightPyramid.size() == 0
+		|| mHeightPyramid.size() != numIteration
+		|| mHeightPyramid.at(0).rows != numRow
+		|| mHeightPyramid.at(0).cols != numCol) {
+		// create pyramids if not already
+		cout << "Create pyramid" << endl;
+		mHeightPyramid.resize(numIteration);
+		mNxPyramid.resize(numIteration);
+		mNyPyramid.resize(numIteration);
+
+		mHeightPyramid[0] = height;
+	}
+	mNxPyramid[0] = nx;
+	mNyPyramid[0] = ny;
+	cout << "setup pyramid: " << boost::get_system_time() - last << endl; last = boost::get_system_time();
+
+	// fill the pyramid
+	for (unsigned int i = 1; i < numIteration; i++) {
+		pyrDown(mHeightPyramid[i-1], mHeightPyramid[i], Size(mHeightPyramid[i-1].cols/2, mHeightPyramid[i-1].rows/2)); // TODO: only need last level
+		pyrDown(mNxPyramid[i-1], mNxPyramid[i], Size(mNxPyramid[i-1].cols/2, mNxPyramid[i-1].rows/2));
+		pyrDown(mNyPyramid[i-1], mNyPyramid[i], Size(mNyPyramid[i-1].cols/2, mNyPyramid[i-1].rows/2));
+	}
+	cout << "filled pyramid: " << boost::get_system_time() - last << endl; last = boost::get_system_time();
+
+	// loop through numIteration, (numIteration - 1) to 0, i is iteration number
+	for (int i = numIteration-1; i >= 0; i--) {
+		double differentialMultiple = pow(2.0,i);
+
+		numRow = mHeightPyramid[i].rows;
+		numCol = mHeightPyramid[i].cols;
+		// ignore the four edges
+		int numLeft = MAX_NUM_ITERATION;
+		while (numLeft-- > 0) {
+			// center piece
+			mHeightPyramid.at(i)(Range(1, numRow-1), Range(1, numCol-1))
+				= (
+					mHeightPyramid[i](Range(2, numRow), Range(1, numCol-1)) // height_(y+1, x)
+					+ mHeightPyramid[i](Range(0, numRow-2), Range(1, numCol-1)) // height_(y-1, x)
+					+ mHeightPyramid[i](Range(1, numRow-1), Range(2, numCol)) // height_(y, x+1)
+					+ mHeightPyramid[i](Range(1, numRow-1), Range(0, numCol-2)) // height_(y, x-1)
+					+ (
+						mNxPyramid[i](Range(1, numRow-1), Range(1, numCol-1)) // nx_(y, x)
+						- mNxPyramid[i](Range(1, numRow-1), Range(0, numCol-2)) // nx_(y, x-1)
+						+ mNyPyramid[i](Range(1, numRow-1), Range(1, numCol-1)) // ny_(y, x)
+						- mNyPyramid[i](Range(0, numRow-2), Range(1, numCol-1)) // ny_(y-1, x)
+					) * differentialMultiple
+				) / 4.0;
+			// top edge
+			mHeightPyramid[i](Range(0, 1), Range(1, numCol-1))
+				= (
+					mHeightPyramid[i](Range(0, 1), Range(2, numCol)) // height_(y, x+1)
+					+ mHeightPyramid[i](Range(0, 1), Range(0, numCol-2)) // height_(y, x-1)
+					+ mHeightPyramid[i](Range(1, 2), Range(1, numCol-1)) // height_(y+1, x)
+					+ mHeightPyramid[i](Range(0, 1), Range(1, numCol-1)) // height_(y, x) <-- self
+					+ (
+						mNxPyramid[i](Range(0, 1), Range(1, numCol-1)) // nx_(y, x) // assume 0 Ny
+						- mNxPyramid[i](Range(0, 1), Range(0, numCol-2)) // nx_(y, x-1)
+					) * differentialMultiple
+				) / 4.0;
+			// bottom edge
+			mHeightPyramid[i](Range(numRow-1, numRow), Range(1, numCol-1))
+				= (
+					mHeightPyramid[i](Range(numRow-1, numRow), Range(2, numCol)) // height_(y, x+1)
+					+ mHeightPyramid[i](Range(numRow-1, numRow), Range(0, numCol-2)) // height_(y, x-1)
+					+ mHeightPyramid[i](Range(numRow-2, numRow-1), Range(1, numCol-1)) // height_(y-1, x)
+					+ mHeightPyramid[i](Range(numRow-1, numRow), Range(1, numCol-1)) // height_(y, x) <-- self
+					+ (
+						mNxPyramid[i](Range(numRow-1, numRow), Range(1, numCol-1)) // nx_(y, x)
+						- mNxPyramid[i](Range(numRow-1, numRow), Range(0, numCol-2)) // nx_(y, x-1)
+						+ mNyPyramid[i](Range(numRow-1, numRow), Range(1, numCol-1)) // ny_(y, x)
+						- mNyPyramid[i](Range(numRow-2, numRow-1), Range(1, numCol-1)) // ny_(y-1, x)
+					) * differentialMultiple
+				) / 4.0;
+			// left edge
+			mHeightPyramid[i](Range(1, numRow-1), Range(0, 1))
+				= (
+					mHeightPyramid[i](Range(0, numRow-2), Range(0, 1)) // height_(y-1, x)
+					+ mHeightPyramid[i](Range(2, numRow), Range(0, 1)) // height_(y+1, x)
+					+ mHeightPyramid[i](Range(1, numRow-1), Range(1, 2)) // height_(y, x+1)
+					+ mHeightPyramid[i](Range(1, numRow-1), Range(0, 1)) // height_(y, x)
+					+ (
+						mNyPyramid[i](Range(1, numRow-1), Range(0, 1)) // ny_(y, x) // assume 0 Nx
+						- mNyPyramid[i](Range(0, numRow-2), Range(0, 1)) // ny_(y-1, x)
+					) * differentialMultiple
+				) / 4.0;
+			// right edge
+			mHeightPyramid[i](Range(1, numRow-1), Range(numCol-1, numCol))
+				= (
+					mHeightPyramid[i](Range(0, numRow-2), Range(numCol-1, numCol)) // height_(y-1, x)
+					+ mHeightPyramid[i](Range(2, numRow), Range(numCol-1, numCol)) // height_(y+1, x)
+					+ mHeightPyramid[i](Range(1, numRow-1), Range(numCol-2, numCol-1)) // height_(y, x-1)
+					+ mHeightPyramid[i](Range(1, numRow-1), Range(numCol-1, numCol)) // height_(y, x)
+					+ (
+						mNxPyramid[i](Range(1, numRow-1), Range(numCol-1, numCol)) // nx_(y, x)
+						- mNxPyramid[i](Range(1, numRow-1), Range(numCol-2, numCol-1)) // nx_(y, x-1)
+						+ mNyPyramid[i](Range(1, numRow-1), Range(numCol-1, numCol)) // ny_(y, x)
+						- mNyPyramid[i](Range(0, numRow-2), Range(numCol-1, numCol)) // ny_(y-1, x)
+					) * differentialMultiple
+				) / 4.0;
+			// corners
+			// top left
+			mHeightPyramid[i].at<float>(0, 0)
+					= (
+					    mHeightPyramid[i].at<float>(0, 0) * 2 // y, x
+					    + mHeightPyramid[i].at<float>(0, 1) // y, x+1
+					    + mHeightPyramid[i].at<float>(1, 0) // y+1, x
+					) / 4.0;
+			// bottom left
+			mHeightPyramid[i].at<float>(numRow-1, 0)
+					= (
+					    mHeightPyramid[i].at<float>(numRow-1, 0) * 2 // y, x
+					    + mHeightPyramid[i].at<float>(numRow-1, 1) // y, x+1
+					    + mHeightPyramid[i].at<float>(numRow-2, 0) // y-1, x
+					    + (mNyPyramid[i].at<float>(numRow-1, 0) // ny_(y, x)
+					       - mNyPyramid[i].at<float>(numRow-2, 0) // ny_(y-1, x)
+					       ) * differentialMultiple
+					) / 4.0;
+			// top right
+			mHeightPyramid[i].at<float>(0, numCol-1)
+					= (
+					    mHeightPyramid[i].at<float>(0, numCol-1) * 2 // y, x
+					    + mHeightPyramid[i].at<float>(0, numCol-2) // y, x-1
+					    + mHeightPyramid[i].at<float>(1, numCol-1) // y+1, x
+					    + (mNxPyramid[i].at<float>(0, numCol-1) // nx_(y, x)
+					       - mNxPyramid[i].at<float>(0, numCol-2) // nx_(y, x-1)
+					       ) * differentialMultiple
+					) / 4.0;
+			// bottom right
+			mHeightPyramid[i].at<float>(numRow-1, numCol-1)
+					= (
+					    mHeightPyramid[i].at<float>(numRow-1, numCol-1) * 2 // y, x
+					    + mHeightPyramid[i].at<float>(numRow-1, numCol-2) // y, x-1
+					    + mHeightPyramid[i].at<float>(numRow-2, numCol-1) // y-1, x
+					    + (mNxPyramid[i].at<float>(numRow-1, numCol-1) // nx_(y, x)
+					       - mNxPyramid[i].at<float>(numRow-1, numCol-2) // nx_(y, x-1)
+						   + mNyPyramid[i].at<float>(numRow-1, numCol-1) // ny_(y, x)
+						   - mNyPyramid[i].at<float>(numRow-2, numCol-1) // ny_(y-1, x)
+					       ) * differentialMultiple
+					) / 4.0;
+					// TODO check convergence
+		}
+
+		if (i > 0) {
+			pyrUp(mHeightPyramid[i], mHeightPyramid[i-1], Size(mNxPyramid[i-1].cols, mNxPyramid[i-1].rows));
+		}
+		cout << "done iteration " << i << ": " << boost::get_system_time() - last << endl; last = boost::get_system_time();
+
+	}
+}
+
+
 // private
 void JacobiSolver::computeDifferentialAdjust(Mat xDifferential, Mat yDifferential, Mat& adjust) {
 	int numRow = xDifferential.rows;
@@ -141,7 +317,6 @@ void JacobiSolver::normalDifferentialToHeight(Mat xDifferential, Mat yDifferenti
 
 		normalDifferentialToHeight(coarseX, coarseY, coarseHeight, ++level);
 
-//		pyrUp(coarseHeight, heightMat, Size(coarseHeight.cols*2, coarseHeight.rows*2));
 		pyrUp(coarseHeight, heightMat, Size(numCol, numRow));
 	}
 

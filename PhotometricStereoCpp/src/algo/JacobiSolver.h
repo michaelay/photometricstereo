@@ -22,8 +22,14 @@ public:
 	virtual ~JacobiSolver();
 
 	void normalToHeight(Mat normals, int numRow, Mat& height);
+	void normalToHeightIterative(Mat normals, int numRow, Mat height);
 
 private:
+
+	std::vector<cv::Mat> mHeightPyramid;
+	std::vector<cv::Mat> mNxPyramid;
+	std::vector<cv::Mat> mNyPyramid;
+
 	void normalDifferentialToHeight(Mat xDifferential, Mat yDifferential, Mat& height, unsigned int level);
 	void computeNormalDifferential(Mat normalVectors, int imageNumRow, Mat& xDifferentialMat, Mat& yDifferentialMat);
 	void scaleDownDifferentialAndHeight(
@@ -38,30 +44,6 @@ private:
 
 	void computeNeighborAdjust(gpu::GpuMat heightMat, gpu::GpuMat& adjust);
 	void computeDifferentialAdjust(gpu::GpuMat xDifferential, gpu::GpuMat yDifferential, gpu::GpuMat& adjust);
-
-//	// Used internally by GPU processing. These Mat are made created once only as GpuMat allocation is expensive
-//	vector<GpuMatPtr > heightGpuMatVector;
-//	vector<GpuMatPtr > neighborGpuMatVector;
-//	vector<GpuMatPtr > pqAdjustGpuMatVector;
-//	vector<GpuMatPtr > oldHeightGpuMatVector;
-//	vector<GpuMatPtr > diffGpuMatVector;
-//	vector<GpuMatPtr > xdiffGpuMatVector;
-//	vector<GpuMatPtr > ydiffGpuMatVector;
-//
-//	GpuMatPtr getHeightGpuMat(unsigned int level, int numRow, int numCol, int type);
-//	GpuMatPtr getNeighborGpuMat(unsigned int level, int numRow, int numCol, int type);
-//	GpuMatPtr getPQAdjustGpuMat(unsigned int level, int numRow, int numCol, int type);
-//	GpuMatPtr getOldHeightGpuMat(unsigned int level);
-//	GpuMatPtr getDiffGpuMat(unsigned int level);
-//	GpuMatPtr getXDiffGpuMat(unsigned int level);
-//	GpuMatPtr getYDiffGpuMat(unsigned int level);
-
-
-//	void normalDifferentialToHeightGpu(Mat xDifferential, Mat yDifferential, Mat& heightMat, unsigned int level);
-//	void normalDifferentialToHeightGpuHelper(GpuMatPtr xDifferential, GpuMatPtr yDifferential, GpuMatPtr heightMat, unsigned int level);
-//
-//	void pyramidDownGpu(GpuMatPtr up, GpuMatPtr down);
-//	void pyramidUpGpu(GpuMatPtr down, GpuMatPtr up);
 
 };
 
