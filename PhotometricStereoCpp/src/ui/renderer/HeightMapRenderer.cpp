@@ -60,8 +60,12 @@ HeightMapRenderer::render() {
 //	glPopMatrix();
 //	glMatrixMode(GL_PROJECTION);
 //	glPopMatrix();
+
+	double minVal, maxVal;
+	minMaxLoc(mHeightMap, &minVal, &maxVal); //find minimum and maximum intensities
+
 	cv::namedWindow("height map", CV_WINDOW_AUTOSIZE);
-	cv::imshow("height map", mHeightMap);
+	cv::imshow("height map", (mHeightMap - cv::Scalar::all(-1.0 * minVal)) * (1.0 / (maxVal - minVal)));
 }
 
 
