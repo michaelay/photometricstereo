@@ -125,10 +125,6 @@ void ImageGrabber::updateScreen() {
 }
 
 void ImageGrabber::captureImage() {
-	captureImage(true);
-}
-
-void ImageGrabber::captureImage(bool adjustInput) {
 
 	int destIdx;
 	Mat newImage;
@@ -152,6 +148,7 @@ void ImageGrabber::captureImage(bool adjustInput) {
 
 		// NEW
 		mCapture->grab();
+		mCapture->grab();
 		*mCapture >> newImage;
 
 //		if (mSaveCopy) {
@@ -167,24 +164,9 @@ void ImageGrabber::captureImage(bool adjustInput) {
 	Mat newImageConvert = convertToGrayScale(newImage);
 	Mat newImageColMat = newImageConvert.reshape(0, CAPTURE_HEIGHT*CAPTURE_WIDTH);
 
-//	if (adjustInput) {
-//		mAdjuster.adjustInputCol(newImageColMat, destIdx);
-//	}
-
 	// copy to corresponding column of mImages
 	Mat destinationCol = mImages.col(destIdx);
-	newImageColMat.copyTo(destinationCol);
-
-	// NEW
-//	if (!mHardcode) {
-//		// clear the cache
-//		// capture image from webcam
-//		Mat dummy;
-//		for (int i=0; i<WEBCAM_NUMBER_FLUSH; i++) {
-//			mCapture->retrieve(dummy);
-//		}
-//	}
-}
+	newImageColMat.copyTo(destinationCol);}
 
 void ImageGrabber::updateCurrentIdx() {
 	mCurrentIdx = ++mCurrentIdx % NUM_IMAGES;

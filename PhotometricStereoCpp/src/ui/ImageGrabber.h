@@ -51,7 +51,6 @@ private:
 
 	void updateScreen();
 	void captureImage();
-	void captureImage(bool adjustInput);
 	void updateCurrentIdx();
 	Mat convertToGrayScale(Mat image);
 	string getFileName(int idx);

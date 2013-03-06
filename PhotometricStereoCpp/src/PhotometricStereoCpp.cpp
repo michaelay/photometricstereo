@@ -7,7 +7,6 @@
 //============================================================================
 
 #include <iostream>
-#include <GL/glfw.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <opencv2/core/core.hpp>
@@ -26,7 +25,7 @@
 using namespace std;
 using namespace cv;
 
-void doStatic(ImageGrabber* grabber, PhotometricStereo* ps, bool hardcode);
+void doStatic(ImageGrabber* grabber, PhotometricStereo* ps);
 void doGenerate(int argc, char** argv, string prefix);
 
 
@@ -35,7 +34,7 @@ PhotometricStereo* ps;
 
 void callback() {
 	try {
-		doStatic(grabber, ps, true); // hardcode
+		doStatic(grabber, ps); // hardcode
 		//		doGenerate(argc, argv, "ss_");
 	} catch (Exception& ex) {
 		cerr << "Exception caught: " << ex.what() << endl;
@@ -46,7 +45,11 @@ void callback() {
 Mat textureMap = Mat::zeros(CAPTURE_HEIGHT, CAPTURE_WIDTH, CV_32FC1);
 
 int main(int argc, char *argv[]) {
-	ImageGrabber::setHardcode(true);
+	if (HARDCODE_IMAGE) {
+		ImageGrabber::setHardcode(true);
+	} else {
+		ImageGrabber::setHardcode(false);
+	}
 	grabber = ImageGrabber::getInstance();
 	ps = new PhotometricStereo();
 
@@ -71,7 +74,7 @@ void doGenerate(int argc, char** argv, string prefix) {
 	delete generator;
 }
 
-void doStatic(ImageGrabber* grabber, PhotometricStereo* ps, bool hardcode) {
+void doStatic(ImageGrabber* grabber, PhotometricStereo* ps) {
 	cout << "Static: waiting to start grab" << endl;
 	grabber->updateScreenAndCapture();
 	cout << "Static: Done grab" << endl;

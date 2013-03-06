@@ -57,13 +57,12 @@ GlutDisplay::GlutDisplay() {
 
 	// GLUT Window Initialization:
 	glutInit(&_mArgc, _mArgv);
-	if (FULL_SCREEN) {
-		glutFullScreen();
-	} else {
-		glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-	}
+	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glutInitDisplayMode ( GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow ("Photometric stereo");
+	if (FULL_SCREEN) {
+		glutFullScreen();
+	}
 }
 
 GlutDisplay::~GlutDisplay() {

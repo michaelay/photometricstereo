@@ -8,13 +8,14 @@
 
 // UI size
 #define FULL_SCREEN 0
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+const int SCREEN_WIDTH = 1366;
+const int SCREEN_HEIGHT = 768;
 const int SCREEN_MARGIN_WIDTH = 200;
 const int SCREEN_MARGIN_HEIGHT = 200;
 
 #define TIME_CHECK
 //#define USE_GPU
+const bool HARDCODE_IMAGE = false;
 
 #define NUM_IMAGES 4
 #define CAPTURE_WIDTH 320
@@ -47,7 +48,7 @@ const int WEBCAM_NUMBER_FLUSH = 0;
 const bool FLIP_HEIGHT = false;
 #endif
 
-const long CAPTURE_WAIT_MILLISECOND = 100; //130;
+const long CAPTURE_WAIT_MILLISECOND = 300; //130;
 const int CAPTURE_IDX_OFFSET = 0; // -1 to 2
 
 #define ADJUSTMENT_MAT_FILENAME "Adjustment.yml"
