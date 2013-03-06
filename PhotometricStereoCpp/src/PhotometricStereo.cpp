@@ -181,10 +181,10 @@ void
 PhotometricStereo::getHeight() {
 //	solver.normalToHeight(mNormalMap, CAPTURE_HEIGHT, mHeightMap);
 	solver.normalToHeightIterative(mNormalMap, CAPTURE_HEIGHT, mHeightMap);
-	cout << "dump height vertical" << endl;
-	cout << mHeightMap.col(160) << endl;
-	cout << "dump height horizontal" << endl;
-	cout << mHeightMap.row(120) << endl;
+//	cout << "dump height vertical" << endl;
+//	cout << mHeightMap.col(160) << endl;
+//	cout << "dump height horizontal" << endl;
+//	cout << mHeightMap.row(120) << endl;
 }
 
 void PhotometricStereo::showNormal(const string& windowName, Mat normals) {
