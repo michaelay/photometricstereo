@@ -40,6 +40,9 @@
 									<listOptionValue builtIn="false" value="IL"/>
 									<listOptionValue builtIn="false" value="ILU"/>
 									<listOptionValue builtIn="false" value="ILUT"/>
+									<listOptionValue builtIn="false" value="vtkCommon"/>
+									<listOptionValue builtIn="false" value="vtkRendering"/>
+									<listOptionValue builtIn="false" value="vtkFiltering"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.1486159284" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>

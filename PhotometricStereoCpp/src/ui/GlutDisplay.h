@@ -16,6 +16,7 @@
 
 #include "renderer/HeightMapRenderer.h"
 #include "renderer/ModelRenderer.h"
+//#include "renderer/VTKModelRenderer.h"
 #include "renderer/LightingPanelRenderer.h"
 #include "renderer/NormalRenderer.h"
 

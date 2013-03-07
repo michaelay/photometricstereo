@@ -14,8 +14,7 @@ const int SCREEN_MARGIN_WIDTH = 200;
 const int SCREEN_MARGIN_HEIGHT = 200;
 
 #define TIME_CHECK
-//#define USE_GPU
-const bool HARDCODE_IMAGE = false;
+const bool HARDCODE_IMAGE = true;
 
 #define NUM_IMAGES 4
 #define CAPTURE_WIDTH 320
