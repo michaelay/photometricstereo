@@ -38,11 +38,6 @@ void ModelRenderer::render() {
     glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
 
-//	glLoadIdentity();
-//    gluLookAt( 0.0f, 0.0f, 40.0f,    // Eye-position
-//               0.0f, 0.0f, 0.0f,   // View-point
-//               0.0f, 1.0f, 0.0f );  // Up-vector
-
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
@@ -50,22 +45,8 @@ void ModelRenderer::render() {
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 
-//	GLuint mTexture;
-//	glGenTextures(1, &mTexture);
-//	glBindTexture(GL_TEXTURE_2D, mTexture);
-//	glEnable(GL_TEXTURE_2D);
-//	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-//	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-
 	if (mHeightMap.rows != 0 && mHeightMap.cols != 0) {
 
-//		float factor = 100.0f / mHeightMap.cols;
-//		float factor = 1.0f / mHeightMap.cols;
-//		glScalef(factor, factor, factor);
 		glRotatef(mXAngle, 1.0f, 0.0f, 0.0f);
 		glRotatef(mYAngle, 0.0f, 1.0f, 0.0f);
 
@@ -83,7 +64,6 @@ void ModelRenderer::render() {
 		glTranslatef(-numCol/2, -numRow/2, 0);
 		glTranslatef(0, -numCol/30, -100);
 
-//		glBegin(GL_TRIANGLE_STRIP);
 		glBegin(GL_LINES);
 
 		for (int r=numRow-1; r>0; r--) { // from numRow-1 to 1
@@ -102,7 +82,6 @@ void ModelRenderer::render() {
 
 			glTexCoord2f((float)0 / numCol, (float)(upRow) / numRow);
 			glVertex3f(0, upRow, mHeightMap.at<float>(r-1, 0)); // self
-
 
 		}
 
@@ -127,7 +106,6 @@ ModelRenderer::incrementAngle(bool x, bool y) {
 	if (y) {
 		updateAngle(mYAngle, true);
 	}
-//	std::cout << "angles: " << mXAngle << " | " << mYAngle << endl;
 }
 
 void
@@ -138,7 +116,6 @@ ModelRenderer::decrementAngle(bool x, bool y) {
 	if (y) {
 		updateAngle(mYAngle, false);
 	}
-//	std::cout << "angles: " << mXAngle << " | " << mYAngle << endl;
 }
 
 ModelRenderer::ModelRenderer() {
